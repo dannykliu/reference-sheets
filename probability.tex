@@ -1,0 +1,145 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsmath, geometry, nopageno, xfrac}
+\setlength{\textheight}{600pt}
+
+
+\newcommand{\ZZ}{\mathbb{Z}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\V}{\mbox{Var}}
+\newcommand{\C}{\mbox{Cov}}
+\newcommand{\EE}{\mathbb{E}}
+
+\usepackage{nicefrac}
+
+\title{Probability Reference Sheet}
+\author{By Danny Liu}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Probability Basics}
+Let $E$ be an event and $S$ the sample space. \\
+$\P(E) \geq 0$, $\P(S) = 1$, $\P(E) = 1-\P(\overline{E})$ \\
+If $A \subseteq B$, then $\P(A) \leq \P(B)$ \\
+$\P(A\cap B) = \P(A|B)\P(B) = \P(B|A)\P(A)$ \\
+$\P(A\cup B) = \P(A) + \P(B) - \P(A\cap B)$ \\
+For independent events, $\P(A\cap B) = \P(A)\P(B)$ and $\P(A|B) = \P(A)$ \\
+For mutually exclusive events, $\P(A\cap B) = 0$ and $\P(A\cup B) = \P(A) + \P(B)$ 
+
+\section{Bayes' Theorem}
+If a sample space $S$ can be partitioned into disjoint events $S = A_1\cup A_2\cup ... \cup A_n$ and $B \subseteq S$, then 
+$\P(B) = \P(B|A_1)\P(A_1) + \P(B|A_2)\P(A_2) + ... + \P(B|A_n)\P(A_n)$ \\
+$\P(A_k|B) = \frac{\P(B|A_k)\P(A_k)}{\P(B|A_1)\P(A_1) + ... + \P(B|A_n)\P(A_n)}$
+
+\section{Expected Value and Variance}
+$\E[X] = \int_{-\infty}^{\infty}x f(x)dx$ \\
+$\E[g(X)] = \int_{-\infty}^{\infty}g(x) f(x)dx$  \\
+$\E[aX + b] = a\E[X] + b$ \\
+$\E[X + Y] = \E[X] + \E[Y]$ \\
+$\V(X) = \E[(X-\E[X])^2] = \E[X^2] - \E[X]^2$ \\
+$\V(aX + b) = a^2\V(X)$
+
+\section{Covariance and Correlation}
+$\V(\sum_{i} X_i) = \sum_{i} \V(X_i) + 2\sum\limits_{i < j}\C(X_i, X_j)$ \\
+$\C(X, Y) = \E[(X-\E[X])(Y-\E[Y])] = E[XY] - E[X]E[Y]$ \\
+$\C(a(X_1 + X_2), Y) = a\C(X_1+X_2, Y) = a\C(X_1, Y) + a\C(X_2, Y)$ \\
+If $X$ and $Y$ are independent, then $\C(X, Y) = 0$ \\
+Define correlation of $X$ and $Y$ as $\rho(X, Y) = \frac{\C(X, Y)}{\sqrt{\V(X)\V(Y)}} = \frac{\langle X, Y \rangle}{\|X\| \|Y\|} = \cos\theta$ \\
+$\rho(X,Y) = \pm 1 \iff Y = aX + b$ for some $a, b \in \mathbb{F}$ \\
+Covariance is an inner product over the quotient space of r.vs with finite second moments. \\
+Standard deviation is the norm on this quotient space.
+
+
+\section{Random Variables}
+A random variable is a function $X: S \to \mathbb{R}$ where $S$ is the sample space.\\
+For discrete $X, Y$, the joint pmf is $p_{X,Y}(x,y) = \P[X = x \cap Y = y]$, where $\sum_x \sum_y p_{X, Y}(x, y)=1$\\
+For continuous $X, Y$, the joint pdf is $\int \int_{(x,y) \in R} f(x, y)dx dy = \P[(x, y) \in R]$ \\
+Note that although $\int_a^b f(x)dx = \P[a \leq X \leq b]$ for continuous $X$, $\P[X=a] = 0$ \\
+If $F(a) = \P[X\leq a] = \int_{-\infty}^a f(x)dx$ is the cdf, then $f(x) = \frac{d}{dx}F(x)$ \\
+Continuous (discrete) r.vs are independent if and only if $f_{X,Y}(x,y) = f_X(x) f_Y(y) $ \\
+The marginal density of $X$ is $f_X(x) = \int_y f(x,y)dy$ 
+
+
+\subsection{Conditional Expectation}
+The conditional distribution of $X$ given $Y$ is $p_{X|Y}(x|y) = \frac{p_{X,Y}(x,y)}{p_Y(y)} = \frac{\P[X=x \cap Y = y]}{\P[Y=y]}$ \\
+The conditional expectation of $X$ given $Y$ is $\E[X|Y=y] = \sum_x x p_{X|Y}(x|y) $ \\
+$\E[\E[X|Y]] = \sum_y\E[X|Y=y]p_Y(y) = \E[X]$
+
+\subsection{Functions of Random Variables}
+Suppose $X$ is a random variable and $Y=g(X)$. If $g$ is increasing and differentiable, then \\
+$f_Y(y) = \begin{cases} f_X(g^{-1}(y)) \cdot \frac{d}{dy}g^{-1}(y) & \text{if } g(a) \leq y \leq g(b) \\ 
+0 & \text{otherwise} \end{cases}$
+
+
+\section{Inequalities and Limit Theorems}
+\subsection{Central Limit Theorem}
+Let $X_1, X_2, ..., X_n$ be $n$ iid r.vs with mean $\mu$ and variance $\sigma^2$. Then for $n$ sufficiently large,
+$$\frac{\bar{X} - \mu}{\sfrac{\sigma}{\sqrt{n}}} \approx Z \sim \mathcal{N}(0, 1)$$
+where $\bar{X} = \frac{X_1 + X_2 + ... + X_n}{n}$ has mean $\mu$ and variance $\frac{\sigma^2}{n}$. In practice, this works well for $n \geq 30$.
+\subsection{Markov's Inequality}
+Let $X$ be a r.v that takes on only non-negative values. Then for any $a > 0$, $\P[X \geq a] \leq \frac{\E[X]}{a}$
+\subsection{Chebyshev's Inequality}
+Let $X$ be a r.v with mean $\mu$ and variance $\sigma^2$. Then for any $k > 0$, $\P[|X - \mu| \geq k \sigma] \leq \frac{1}{k^2}$
+\subsection{Law of Large Numbers}
+Let $X_1, X_2, ..., X_n$ be iid r.vs with mean $\mu$ and finite variance. Then $\P\Big[\lim\limits_{n\to \infty} \frac{X_1 + X_2 + ... + X_n}{n} = \mu \Big] = 1$ 
+
+\section{Moment Generating Functions}
+$M_X(t) = \E[e^{tX}] = \int_x e^{tx}f(x)dx$, where $\E[X], \E[X^2], \E[X^3], ...$ are the moments of $X$ \\
+Consider Taylor expansion of $e^{tX} = 1 + tX + \frac{t^2X^2}{2!} + \frac{t^3X^3}{3!} + ... $ \\
+If two r.vs have the same mgf for all $t \in \mathbb{R}$, then they have the same distribution for all $t \in \mathbb{R}$.
+\subsection{Properties of MGF}
+\begin{enumerate}
+\item $M_X(t) = \sum_{k=0}^{\infty}\E[x^k]\frac{t^k}{k!}$ 
+\item $\E[X^k] = \frac{d^k}{dt^k}M_X(t) \big |_{t=0}$ for any integer $k > 0$
+\item If $X, Y$ are r.vs and $Y = aX + b$, then $M_Y(t) = e^{bt}M_X(at)$
+\item If $X_1, X_2, ..., X_n$ are independent r.vs, then $M_{X_1 + X_2 + ... + X_n}(t) = M_{X_1}(t)M_{X_2}(t) ... M_{X_n}(t)$
+\end{enumerate}
+
+\section{Common Distributions}
+\subsection{Binomial Distribution}
+$X\sim Bin(n, p)$ keeps tracks of the number of $n$ Bernoulli trials that ends up being a success. \\
+$p_X(i) = p^i(1-p)^{n-i}\binom{n}{i}$, $M_X(t) = (pe^t + 1 - p)^n$, $\E[X] = np$, $\V(X) = np(1-p)$
+
+\subsection{Poisson Distribution}
+$X\sim Poi(\lambda)$ approximates binomial well when $n$ is large, $p$ is small and $\lambda = np$ is moderate. \\
+$p_X(i) = e^{-\lambda}\frac{\lambda^i}{i!}$, $M_X(t) = e^{\lambda(e^t - 1)}$, $\E[X] = \lambda$ $\V(X) = \lambda$
+
+\subsection{Geometric Distribution}
+$X \sim Geo(p)$ counts the number of Bernoulli trials needed to get one success. \\
+$p_X(i) = (1-p)^{i-1}p$, $M_X(t) = \frac{pe^t}{1-(1-p)e^t}$, $\E[X] = \frac{1}{p}$, $\V(X) = \frac{1-p}{p^2}$
+
+\subsection{Uniform Distribution}
+$X\sim U(a, b)$, $\E[X] = \frac{1}{2}(a+b)$, $\V(X) = \frac{(b-a)^2}{12}$ \\
+$f(x) = \begin{cases} \frac{1}{b-a} & \text{if } a < x < b \\ 
+0 & \text{otherwise} \end{cases}$ , $M_X(t) = \frac{e^{tb} - e^{ta}}{t(b-a)}$
+
+\subsection{Exponential Distribution}
+$X\sim Exp(\lambda)$, $\E[X] = \frac{1}{\lambda}$, $\V(X) = \frac{1}{\lambda^2}$ \\
+$f(x) = \begin{cases} \lambda e^{-\lambda x} & \text{if } x \geq 0 \\ 
+0 & \text{otherwise} \end{cases}$ , $M_X(t) = \frac{\lambda}{\lambda - t}$ \\
+$\P(X > s + t | X > s) = \P(X > t)$ as exponential variables are memoryless and vice-versa.
+
+\subsection{Normal Distribution}
+$X\sim \mathcal{N}(\mu, \sigma^2)$, $\E[X] = \mu$, $\V(X) = \sigma^2$, $f(x)=\frac{1}{\sigma \sqrt{2\pi}}e^{\frac{-(x-\mu)^2}{2\sigma^2}}$, $M_X(t) = e^{\mu t + \frac{\sigma^2 t^2}{2}}$\\
+If $Z = \frac{X-\mu}{\sigma}$, then $Z\sim \mathcal{N}(0, 1)$ and we define $\phi(z) = \P(Z \leq z)$, $\phi(z) = 1-\phi(-z)$\\
+$\P[a\leq X \leq b] = \P[X \leq b] - \P[X \leq a] = \phi(\frac{b-\mu}{\sigma}) - \phi(\frac{a-\mu}{\sigma})$ 
+
+
+\section{Miscellaneous}
+The joint $f_{X,Y}(x,y) = g(x^2 + y^2)$ is radial if and only if the marginals are Gaussian. 
+
+\subsection{Fundamental Theorem of Calculus}
+Let $f$ be a continuous real-valued function on $[a, b]$ and $F$ be the antiderivative of $f$. \\
+Then $\int_a^b f(t) dt = F(b) - F(a)$ and $\frac{d}{dx}\int_a^x f(t)dt = f(x)$ 
+\subsection{Integrals}
+$\int udv = uv - \int vdu$, $\int_0^{\infty}f(x)dx = \lim\limits_{b\to\infty}\int_0^bf(x)dx$ \\
+$\int_{s}^{\infty}\lambda e^{-\lambda x}dx = e^{-\lambda s}$, $\int xe^{-\lambda x}dx = \frac{1}{\lambda^2}(-\lambda e^{-\lambda x}x -e^{-\lambda x}) + C$ \\
+$\int \frac{1}{1+x^2}dx = \arctan(x) + C$, $\int \frac{x^2}{1+x^2} dx = \int 1 - \frac{1}{1+x^2}dx$, $\int \frac{x^3}{1+x^2} dx = \int x - \frac{x}{1+x^2}dx$ 
+
+
+\end{document}
+
