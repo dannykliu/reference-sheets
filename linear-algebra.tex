@@ -90,7 +90,8 @@ and $\det A = \sum_j (-1)^{1+j}a_{1j} \det A_{1j}$ otherwise where $A_{ij}$ deno
 $\abs {\det A} \mbox{ scales volume of vector transformed by $A$ and is 0 when it is collapsed to a lower dimension}$ \\
 If $A$ is triangular, then $\det A = \prod_i a_{ii}$ where $a_{ii}$ are the diagonal elements \\
 Interchanging rows or columns, $\det A = - \det A$. Adding rows or columns $\det A = \det A$ \\
-$\det A = \det A^T$, $\det A^{-1} = \frac{1}{\det A}$, $\det (cA) = c^n \det A$, $\det (AB) = \det A \det B$, $\det A = \prod_i^n \lambda_i $ 
+$\det A = \prod_i^n \lambda_i $, $\det (AB) = \det A \det B$, $\det (cA) = c^n \det A$, $\det A^{-1} = \frac{1}{\det A}$, $\det A = \det A^T$
+
 
 \subsection{Characteristic Polynomial}
 $\det(\lambda I - T) = p(\lambda) = (\lambda-\lambda_1)^{d_1} \ldots (\lambda-\lambda_m)^{d_m}$ where $d_i = \dim G(\lambda_i, T) = \dim (\nullspace (T- \lambda I)^{\dim \V})$ \\
@@ -107,14 +108,6 @@ Every $m \times n$ real matrix $A$ contains four fundamental subspaces described
 \includegraphics[width=8cm]{fund_thm.png} \\
 This implies if $T \in \linear(\V, \W)$, then $\V = \row T \oplus \ker T$ and $\W = \row T^* \oplus \ker T^*$ \\
 $x \mapsto Ax \mbox{ is one-to-one} \iff \ker A = \{\boldsymbol{0}\}$. $\col A = \im A = \range A = \row A^T$ \\
-%\begin{enumerate}
-%\item $\im A = \col A = \range A$ has $\dim r$ with basis of first $r$ columns of $U$ 
-%\item $\ker A^T$ has $\dim (m-r)$ with basis of last $m-r$ columns of $U$ 
-%\item $\im A^T = \row A$ has $\dim r$ with basis of first $r$ columns of $V$ 
-%\item $\ker A$ has $\dim (n-r)$ with basis of first $n-r$ columns of $V$ 
-%\end{enumerate}
-% $\ker A = (\im A^T)^{\perp}$, $\ker A^T = (\im A)^{\perp}$ and $x \mapsto Ax \mbox{ is one-to-one} \iff \ker A = \{\boldsymbol{0}\}$ \\
-% $A$ takes $v \in \row A \mapsto \col A$ and $v \in \ker A \mapsto \{\boldsymbol{0}\}$. Hence $Av_i = \sigma_i u_i \implies AV = \Sigma U$
 $A \begin{bmatrix} v_1 \ldots v_r \end{bmatrix} = \begin{bmatrix} u_1 \ldots u_r \end{bmatrix} \diag(\sigma_1, \dots, \sigma_r) \implies A = U_r\Sigma_r V_r^T = u_1\sigma_1 v_1^T + \ldots u_r\sigma_r v_r^T$
 
 \section{Rank-Nullity Theorem}
