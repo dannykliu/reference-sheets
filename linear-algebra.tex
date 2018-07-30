@@ -102,16 +102,20 @@ Trace and determinant are both invariant under similarity, so $\tr A =  \tr (PJP
 $\tr (X^TY) = \sum_{i, j} X_{ij}Y_{ij} = \vect (X)^T \vect(Y) \approx \inner{X}{Y}$, $\tr (ABC) = \tr(CAB) = \tr(BCA)$ 
 
 \section{Fundamental Theorem of Linear Algebra}
-Each $m \times n$ real matrix $A$ contains four fundamental subspaces described by $A = U\Sigma V^T$ 
-\begin{enumerate}
-\item $\im A = \col A = \range A$ has $\dim r$ with basis of first $r$ columns of $U$ 
-\item $\ker A^T$ has $\dim (m-r)$ with basis of last $m-r$ columns of $U$ 
-\item $\im A^T = \row A$ has $\dim r$ with basis of first $r$ columns of $V$ 
-\item $\ker A$ has $\dim (n-r)$ with basis of first $n-r$ columns of $V$ 
-\end{enumerate}
-$\ker A = (\im A^T)^{\perp}$, $\ker A^T = (\im A)^{\perp}$ and $x \mapsto Ax \mbox{ is one-to-one} \iff \ker A = \{\boldsymbol{0}\}$ \\
-This implies if $T \in \linear(\V, \W)$, then $\W = \row T^* \oplus \ker T^*$ and $\V = \row T \oplus \ker T$ \\
-$A$ takes $v \in \row A \mapsto \col A$ and $v \in \ker A \mapsto \{\boldsymbol{0}\}$. Hence $Av_i = \sigma_i u_i \implies AV = \Sigma U$
+Every $m \times n$ real matrix $A$ contains four fundamental subspaces described by $A = U\Sigma V^T$ \\
+
+\includegraphics[width=9cm, height=4cm]{fund_thm.png} \\
+This implies if $T \in \linear(\V, \W)$, then $\V = \row T \oplus \ker T$ and $\W = \row T^* \oplus \ker T^*$ \\
+$x \mapsto Ax \mbox{ is one-to-one} \iff \ker A = \{\boldsymbol{0}\}$. $\col A = \im A = \range A = \row A^T$ \\
+%\begin{enumerate}
+%\item $\im A = \col A = \range A$ has $\dim r$ with basis of first $r$ columns of $U$ 
+%\item $\ker A^T$ has $\dim (m-r)$ with basis of last $m-r$ columns of $U$ 
+%\item $\im A^T = \row A$ has $\dim r$ with basis of first $r$ columns of $V$ 
+%\item $\ker A$ has $\dim (n-r)$ with basis of first $n-r$ columns of $V$ 
+%\end{enumerate}
+% $\ker A = (\im A^T)^{\perp}$, $\ker A^T = (\im A)^{\perp}$ and $x \mapsto Ax \mbox{ is one-to-one} \iff \ker A = \{\boldsymbol{0}\}$ \\
+% $A$ takes $v \in \row A \mapsto \col A$ and $v \in \ker A \mapsto \{\boldsymbol{0}\}$. Hence $Av_i = \sigma_i u_i \implies AV = \Sigma U$
+$A \begin{bmatrix} v_1 \ldots v_r \end{bmatrix} = \begin{bmatrix} u_1 \ldots u_r \end{bmatrix} \diag(\sigma_1, \dots, \sigma_r) \implies A = U_r\Sigma_r V_r^T = u_1\sigma_1 v_1^T + \ldots u_r\sigma_r v_r^T$
 
 \section{Rank-Nullity Theorem}
 ${\mbox{Let } T \in \linear(\V, \W)\mbox{, then }\rank(T) + \nullity(T)= \dim V\mbox{. Equivalently, }\dim (\im T) + \dim (\ker T) = \dim V}$.
@@ -129,7 +133,8 @@ $\mbox{If } A \mbox { is symmetric, then } (A-\lambda I)^2v = 0 \implies v^T(A-\
 \section{Singular Value Decomposition}
 Any real $m \times n$ matrix $A$ can be factored into $A = U \Sigma V^T$ where $U, V$ are orthogonal matrices whose columns are the orthonormal eigenvectors of $AA^T$ and $A^TA$ respecitvely and $\Sigma$ is the $m \times n$ diagonal matrix of the square roots of the nonzero eigenvalues values of $A^TA$.
 \subsection{Key Insights}
-$A^TA$ and $AA^T$ are symmetric positive semi-definite, the condition where $U \Sigma V^T = PDP^{-1}$ \\
+Add rest of basis vectors $v_{r+1} \ldots v_n$ and $u_{r+1} \ldots u_n$ to $V_r$ and $U_r$ to make them orthogonal matrices \\
+$A^TA = (AA^T)^T \succeq 0$, so they are orthogonally diagonalizable and have nonnegative eigenvalues \\
 $A^TA = (U \Sigma V^T)^T U \Sigma V^T = V \Sigma^2 V^T, \mbox{ from which } V \mbox{ and } \Sigma \mbox{ can be implied by spectral decomposition}$ \\
 When $A$ is square, the transformation can be viewed as a change of basis (rotation 1) $V^T$, a scaling in that intermediate basis $\Sigma$ and then another change of basis (rotation 2) $U$ \\
 $A^T = (U \Sigma V^T)^T = V \Sigma^T U^T$ viewed as inverse rotation (2), same scaling and inverse rotation (1) \\
