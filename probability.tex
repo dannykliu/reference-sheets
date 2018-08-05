@@ -1,18 +1,19 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
-\usepackage{amssymb}
-\usepackage{amsmath, geometry, nopageno, xfrac}
+\usepackage{amssymb, amsmath, geometry, nopageno, xfrac, nicefrac, mathtools}
 \setlength{\textheight}{600pt}
+\usepackage{graphicx, wrapfig}
+\graphicspath{ {./images/} }
 
 
 \newcommand{\ZZ}{\mathbb{Z}}
-\renewcommand{\P}{\mathbb{P}}
-\newcommand{\E}{\mathbb{E}}
-\newcommand{\V}{\mbox{Var}}
-\newcommand{\C}{\mbox{Cov}}
-\newcommand{\EE}{\mathbb{E}}
-
-\usepackage{nicefrac}
+\newcommand{\V}{\mbox{var}}
+\newcommand{\C}{\mbox{cov}}
+\newcommand\inner[2]{\langle #1, #2 \rangle}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin} 
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
 
 \title{Probability Reference Sheet}
 \author{By Danny Liu}
@@ -21,123 +22,154 @@
 \begin{document}
 \maketitle
 
-\section{Probability Basics}
-Let $E$ be an event and $S$ the sample space. \\
-$\P(E) \geq 0$, $\P(S) = 1$, $\P(E) = 1-\P(\overline{E})$ \\
-If $A \subseteq B$, then $\P(A) \leq \P(B)$ \\
-$\P(A\cap B) = \P(A|B)\P(B) = \P(B|A)\P(A)$ \\
-$\P(A\cup B) = \P(A) + \P(B) - \P(A\cap B)$ \\
-For independent events, $\P(A\cap B) = \P(A)\P(B)$ and $\P(A|B) = \P(A)$ \\
-For mutually exclusive events, $\P(A\cap B) = 0$ and $\P(A\cup B) = \P(A) + \P(B)$ 
+\section{Basic Knowledge}
+Let $E$ be an event and $S$ the sample space, then $P(E) \geq 0$, $P(S) = 1$, $P(E) = 1-P(\overline{E})$ \\
+If $A \perp B$, then $P(A\cap B) = P(A)P(B)$ and $P(A|B) = P(A)$, If $A \cap B = \varnothing$, then $P(A\cap B) = 0$ \\
+$P(A\cap B) = P(A|B)P(B) = P(B|A)P(A)$ and $P(A\cup B) = P(A) + P(B) - P(A\cap B)$ \\
+If $S = B_1\cup ... \cup B_n$ and $A \subseteq S$, then $P(A) = \sum_i P(A \cap B_i) = \sum_i P(A |B_i)P(B_i)$ \\
+$p(x_1, \ldots, x_n) = p(x_n | x_{n-1}, \ldots , x_1) p(x_{n-1} | x_{n-2}, \ldots, x_1) \ldots p(x_1)$ 
 
-\section{Bayes' Theorem}
-If a sample space $S$ can be partitioned into disjoint events $S = A_1\cup A_2\cup ... \cup A_n$ and $B \subseteq S$, then 
-$\P(B) = \P(B|A_1)\P(A_1) + \P(B|A_2)\P(A_2) + ... + \P(B|A_n)\P(A_n)$ \\
-$\P(A_k|B) = \frac{\P(B|A_k)\P(A_k)}{\P(B|A_1)\P(A_1) + ... + \P(B|A_n)\P(A_n)}$
+\section{Bayesian Inference}
+$p(\theta|D) = \frac{p(D|\theta)p(\theta)}{\int p(D|\theta)p(\theta) d\theta}$, where $p(D|\theta)$ is the likelihood, $p(\theta)$ is the prior and $p(D)$ is the marginal
 
-\section{Expected Value and Variance}
-$\E[X] = \int_{-\infty}^{\infty}x f(x)dx$ \\
-$\E[g(X)] = \int_{-\infty}^{\infty}g(x) f(x)dx$  \\
-$\E[aX + b] = a\E[X] + b$ \\
-$\E[X + Y] = \E[X] + \E[Y]$ \\
-$\V(X) = \E[(X-\E[X])^2] = \E[X^2] - \E[X]^2$ \\
-$\V(aX + b) = a^2\V(X)$
+\subsection{Conjugate Priors}
+A family $F$ of priors $p(\theta)$ is conjugate to the likelihood $p(D|\theta)$ if the posterior $p(\theta|D)$ is in $F$ \\
+$\mbox{Beta}(\alpha, \beta)\mbox{ is conjugate to Bin}(n, p)\mbox{, Geo}(p)\mbox{, Bern}(\phi) \mbox{. Dir}(\boldsymbol \alpha)\mbox{ is conjugate to Cat}(\boldsymbol p)\mbox{, Mult}(n, \boldsymbol p)$ \\
+$\mathcal{N}(\mu, \sigma^2)$ is self-conjugate. $\mbox{Gamma}(\alpha, \beta)$ is conjugate to $\mbox{Exp}(\lambda)$, $\mbox{Poi}(\lambda)$, $\mathcal{N}(\mu, \sigma^2)$
 
-\section{Covariance and Correlation}
-$\V(\sum_{i} X_i) = \sum_{i} \V(X_i) + 2\sum\limits_{i < j}\C(X_i, X_j)$ \\
-$\C(X, Y) = \E[(X-\E[X])(Y-\E[Y])] = E[XY] - E[X]E[Y]$ \\
-$\C(a(X_1 + X_2), Y) = a\C(X_1+X_2, Y) = a\C(X_1, Y) + a\C(X_2, Y)$ \\
-If $X$ and $Y$ are independent, then $\C(X, Y) = 0$ \\
+\subsection{Maximum Likelihood Estimate}
+Find $\theta$ that maximizes the likelihood, $\theta^* = \argmax\limits_\theta p(D|\theta)$. Assuming that $D$ is iid, then \\
+The conditional likelihood of $y|x$ is $L(\theta) = \prod\limits_{i=1}^np(y^{(i)}|x^{(i)}; \theta)$ 
+
+\subsection{Maximum a Posteriori}
+Given prior $p(\theta)$, find $\theta$ that maximizes the posterior, $\theta^* = \argmax\limits_\theta p(\theta|D) = \argmax\limits_\theta p(D| \theta)p(\theta)$ \\
+When $n \to \infty$ or $p(\theta)$ is uniform, then MAP = MLE as $p(\theta | D) \propto p(D|\theta)$
+
+\section{Expectation and Covariance}
+$E[X] = \int_x x f(x)dx$, $\V(X) = E[(X-E[X])^2] = E[X^2] - E[X]^2$ \\
+$E[g(X)] = \int_x g(x) f(x)dx$, $E[aX + b] = aE[X] + b$, $\V(aX + b) = a^2\V(X)$\\
+$E[\sum_i X_i] = \sum_i E[X_i]$, $\V(\sum_{i} X_i) = \sum_{i} \V(X_i) + 2\sum\limits_{i < j}\C(X_i, X_j)$ \\
+$\C(X, Y) = \inner{X}{Y} = E[(X-E[X])(Y-E[Y])] = E[XY] - E[X]E[Y]$ \\
 Define correlation of $X$ and $Y$ as $\rho(X, Y) = \frac{\C(X, Y)}{\sqrt{\V(X)\V(Y)}} = \frac{\langle X, Y \rangle}{\|X\| \|Y\|} = \cos\theta$ \\
-$\rho(X,Y) = \pm 1 \iff Y = aX + b$ for some $a, b \in \mathbb{F}$ \\
-Covariance is an inner product over the quotient space of r.vs with finite second moments. \\
-Standard deviation is the norm on this quotient space.
+$\rho(X,Y) =  \pm 1 \iff Y = aX + b$ for some $a, b \in \mathbb{F}$ 
 
+\subsection{Covariance Matrix}
+$\Sigma = E[(\boldsymbol X - \boldsymbol \mu)(\boldsymbol X - \boldsymbol \mu)^T] = E[\boldsymbol X \boldsymbol X^T] - \boldsymbol \mu \boldsymbol \mu^T$, where $\Sigma_{ij} = \C(X_i, X_j)$ \\
+$\Sigma$ is symmetric positive semi-definite and $\C(Ax + b) = A \Sigma A^T$ \\
+Suppose $\boldsymbol x = (\boldsymbol x_1, \boldsymbol x_2)$ is jointly Gaussian with parameters $\boldsymbol \mu = \begin{pmatrix} \boldsymbol \mu_1\\ \boldsymbol \mu_2 \end{pmatrix}$ and $\boldsymbol \Sigma = \begin{pmatrix} \boldsymbol \Sigma_{11} & \boldsymbol \Sigma_{12} \\ \boldsymbol \Sigma_{21} & \boldsymbol \Sigma_{22} \end{pmatrix}$, then \\
+The marginals are $p(\boldsymbol x_1) = \mathcal{N}(\boldsymbol x_1 | \boldsymbol \mu_1, \boldsymbol \Sigma_{11})$ and $p(\boldsymbol x_2) = \mathcal{N}(\boldsymbol x_2 | \boldsymbol \mu_2, \boldsymbol \Sigma_{22})$ with posterior conditional \\
+$p(\boldsymbol x_1 | \boldsymbol x_2) = \mathcal{N}(\boldsymbol x_1 | \boldsymbol \mu_{1|2}, \boldsymbol \Sigma_{1|2})$, where $\boldsymbol \mu_{1|2} = \boldsymbol \mu_1 + \boldsymbol \Sigma_{12}\boldsymbol \Sigma_{22}^{-1}(\boldsymbol x_2 - \boldsymbol \mu_2)$, $\boldsymbol \Sigma_{1|2} = \boldsymbol \Sigma_{11} - \boldsymbol \Sigma_{12}\boldsymbol \Sigma_{22}^{-1}\boldsymbol \Sigma_{21}$
+
+\subsection{Conditional Expectation}
+The conditional distribution of $X$ given $Y$ is $p_{X|Y}(x|y) = \frac{p_{X,Y}(x,y)}{p_Y(y)} = \frac{P[X=x \cap Y = y]}{P[Y=y]}$ \\
+The conditional expectation of $X$ given $Y$ is $E[X|Y=y] = \sum_x x p_{X|Y}(x|y) $ \\
+$E[E[X|Y]] = \sum_yE[X|Y=y]p_Y(y) = E[X]$
+
+\section{Inequalities and Limit Theorems}
+If $X$ only takes on non-negative values, then for any $a > 0$, $P[X \geq a] \leq \frac{E[X]}{a}$  (Markov)\\
+If $E[X] = \mu$ and $\V(X) = \sigma^2$, then for any $k > 0$, $P[|X - \mu| \geq k \sigma] \leq \frac{1}{k^2}$ (Chebyshev) \\
+If $f$ is a convex function, then $E[fX] \geq f(E X)$ (Jensen) 
+
+\subsection{Limit Theorems}
+Let $X_1, X_2, ..., X_n$ be iid with $E[X] = \mu$ and $\V(X) = \sigma^2 < \infty$, then for $n$ sufficiently large 
+\begin{enumerate}
+\item $\frac{\bar{X} - \mu}{\sfrac{\sigma}{\sqrt{n}}} \approx Z \sim \mathcal{N}(0, 1)$, where $\bar{X} = \frac{X_1 + X_2 + ... + X_n}{n}$ has mean $\mu$ and variance $\frac{\sigma^2}{n}$ (CLT)
+\item $P\Big[\lim\limits_{n\to \infty} \frac{X_1 + X_2 + ... + X_n}{n} = \mu \Big] = 1$ (Law of Large Numbers)
+\end{enumerate}
+
+\section{Moment Generating Functions}
+$M_X(t) = E[e^{tX}] = \int_x e^{tx}f(x)dx$, where $E[X], E[X^2], E[X^3], ...$ are the moments of $X$ \\
+Consider Taylor expansion of $e^{tX} = 1 + tX + \frac{t^2X^2}{2!} + \frac{t^3X^3}{3!} + ... $ \\
+If two r.vs have the same mgf for all $t \in \mathbb{R}$, then they have the same distribution for all $t \in \mathbb{R}$.
+$M_X(t) = \sum_{k=0}^{\infty}E[x^k]\frac{t^k}{k!}$ and $E[X^k] = \frac{d^k}{dt^k}M_X(t) \big |_{t=0}$ for any integer $k > 0$ \\
+If $X, Y$ are r.vs and $Y = aX + b$, then $M_Y(t) = e^{bt}M_X(at)$ \\
+If $X_1, X_2, ..., X_n$ are independent r.vs, then $M_{X_1 + X_2 + ... + X_n}(t) = M_{X_1}(t)M_{X_2}(t) ... M_{X_n}(t)$
 
 \section{Random Variables}
 A random variable is a function $X: S \to \mathbb{R}$ where $S$ is the sample space.\\
-For discrete $X, Y$, the joint pmf is $p_{X,Y}(x,y) = \P[X = x \cap Y = y]$, where $\sum_x \sum_y p_{X, Y}(x, y)=1$\\
-For continuous $X, Y$, the joint pdf is $\int \int_{(x,y) \in R} f(x, y)dx dy = \P[(x, y) \in R]$ \\
-Note that although $\int_a^b f(x)dx = \P[a \leq X \leq b]$ for continuous $X$, $\P[X=a] = 0$ \\
-If $F(a) = \P[X\leq a] = \int_{-\infty}^a f(x)dx$ is the cdf, then $f(x) = \frac{d}{dx}F(x)$ \\
+For discrete $X, Y$, the joint pmf is $p_{X,Y}(x,y) = P[X = x \cap Y = y]$, where $\sum_x \sum_y p_{X, Y}(x, y)=1$\\
+For continuous $X, Y$, the joint pdf is $\int \int_{(x,y) \in R} f(x, y)dx dy = P[(x, y) \in R]$ \\
+Note that although $\int_a^b f(x)dx = P[a \leq X \leq b]$ for continuous $X$, $P[X=a] = 0$ \\
+If $F(a) = P[X\leq a] = \int_{-\infty}^a f(x)dx$ is the cdf, then $f(x) = \frac{d}{dx}F(x)$ \\
 Continuous (discrete) r.vs are independent if and only if $f_{X,Y}(x,y) = f_X(x) f_Y(y) $ \\
 The marginal density of $X$ is $f_X(x) = \int_y f(x,y)dy$ 
-
-
-\subsection{Conditional Expectation}
-The conditional distribution of $X$ given $Y$ is $p_{X|Y}(x|y) = \frac{p_{X,Y}(x,y)}{p_Y(y)} = \frac{\P[X=x \cap Y = y]}{\P[Y=y]}$ \\
-The conditional expectation of $X$ given $Y$ is $\E[X|Y=y] = \sum_x x p_{X|Y}(x|y) $ \\
-$\E[\E[X|Y]] = \sum_y\E[X|Y=y]p_Y(y) = \E[X]$
 
 \subsection{Functions of Random Variables}
 Suppose $X$ is a random variable and $Y=g(X)$. If $g$ is increasing and differentiable, then \\
 $f_Y(y) = \begin{cases} f_X(g^{-1}(y)) \cdot \frac{d}{dy}g^{-1}(y) & \text{if } g(a) \leq y \leq g(b) \\ 
 0 & \text{otherwise} \end{cases}$
 
-
-\section{Inequalities and Limit Theorems}
-\subsection{Central Limit Theorem}
-Let $X_1, X_2, ..., X_n$ be $n$ iid r.vs with mean $\mu$ and variance $\sigma^2$. Then for $n$ sufficiently large,
-$$\frac{\bar{X} - \mu}{\sfrac{\sigma}{\sqrt{n}}} \approx Z \sim \mathcal{N}(0, 1)$$
-where $\bar{X} = \frac{X_1 + X_2 + ... + X_n}{n}$ has mean $\mu$ and variance $\frac{\sigma^2}{n}$. In practice, this works well for $n \geq 30$.
-\subsection{Markov's Inequality}
-Let $X$ be a r.v that takes on only non-negative values. Then for any $a > 0$, $\P[X \geq a] \leq \frac{\E[X]}{a}$
-\subsection{Chebyshev's Inequality}
-Let $X$ be a r.v with mean $\mu$ and variance $\sigma^2$. Then for any $k > 0$, $\P[|X - \mu| \geq k \sigma] \leq \frac{1}{k^2}$
-\subsection{Law of Large Numbers}
-Let $X_1, X_2, ..., X_n$ be iid r.vs with mean $\mu$ and finite variance. Then $\P\Big[\lim\limits_{n\to \infty} \frac{X_1 + X_2 + ... + X_n}{n} = \mu \Big] = 1$ 
-
-\section{Moment Generating Functions}
-$M_X(t) = \E[e^{tX}] = \int_x e^{tx}f(x)dx$, where $\E[X], \E[X^2], \E[X^3], ...$ are the moments of $X$ \\
-Consider Taylor expansion of $e^{tX} = 1 + tX + \frac{t^2X^2}{2!} + \frac{t^3X^3}{3!} + ... $ \\
-If two r.vs have the same mgf for all $t \in \mathbb{R}$, then they have the same distribution for all $t \in \mathbb{R}$.
-\subsection{Properties of MGF}
-\begin{enumerate}
-\item $M_X(t) = \sum_{k=0}^{\infty}\E[x^k]\frac{t^k}{k!}$ 
-\item $\E[X^k] = \frac{d^k}{dt^k}M_X(t) \big |_{t=0}$ for any integer $k > 0$
-\item If $X, Y$ are r.vs and $Y = aX + b$, then $M_Y(t) = e^{bt}M_X(at)$
-\item If $X_1, X_2, ..., X_n$ are independent r.vs, then $M_{X_1 + X_2 + ... + X_n}(t) = M_{X_1}(t)M_{X_2}(t) ... M_{X_n}(t)$
-\end{enumerate}
+\subsection{Continuity Correction}
+If a discrete distribution (e.g Binomial, Poisson) is approximated by a continuous distribution (e.g normal), then the following adjustments must be made  \\
+$x = n$ becomes $n-0.5 < x < n + 0.5$ \\
+$x > n$ becomes $x > n + 0.5$ and $x < n $ becomes $x < n - 0.5$ 
 
 \section{Common Distributions}
-\subsection{Binomial Distribution}
-$X\sim Bin(n, p)$ keeps tracks of the number of $n$ Bernoulli trials that ends up being a success. \\
-$p_X(i) = p^i(1-p)^{n-i}\binom{n}{i}$, $M_X(t) = (pe^t + 1 - p)^n$, $\E[X] = np$, $\V(X) = np(1-p)$
+\subsection{Bernoulli Distribution}
+$X\sim \mbox{Bernoulli}(\phi)$, $p(x) = \phi^x(1-\phi)^x$, $M_X(t) = (1-\phi) + \phi e^t$, $E[X] = \phi$, $\V(X) = \phi(1-\phi)$
 
-\subsection{Poisson Distribution}
-$X\sim Poi(\lambda)$ approximates binomial well when $n$ is large, $p$ is small and $\lambda = np$ is moderate. \\
-$p_X(i) = e^{-\lambda}\frac{\lambda^i}{i!}$, $M_X(t) = e^{\lambda(e^t - 1)}$, $\E[X] = \lambda$ $\V(X) = \lambda$
+\subsection{Categorial Distribution}
+$X\sim \mbox{Cat}(\boldsymbol p)$, $p(\boldsymbol x) = \sum\limits_{i=1}^kp_i^{x_i}$ is a generalization of the Bernoulli/special case of multinomial
+
+\subsection{Binomial Distribution}
+$X\sim \mbox{Bin}(n, p)$ models the number of $n$ Bernoulli trials that end up being successes \\
+$p(x) = p^x(1-p)^{n-x}\binom{n}{x}$, $M_X(t) = (pe^t + 1 - p)^n$, $E[X] = np$, $\V(X) = np(1-p)$
+
+\subsection{Multinomial Distribution}
+$X\sim \mbox{Multinomial}(n, \boldsymbol p)$ models the outcome of $n$ categorial trials \\
+$p(\boldsymbol x) = \binom{n}{x_1, \ldots, x_k} \prod\limits_{i=1}^k p_i^{x_i}$, $M_X(\boldsymbol t) = (\sum\limits_{i=1}^k p_i e^{t_i})^n$, where $\sum_i p_i = 1$ and $\sum_i x_i = n$
 
 \subsection{Geometric Distribution}
-$X \sim Geo(p)$ counts the number of Bernoulli trials needed to get one success. \\
-$p_X(i) = (1-p)^{i-1}p$, $M_X(t) = \frac{pe^t}{1-(1-p)e^t}$, $\E[X] = \frac{1}{p}$, $\V(X) = \frac{1-p}{p^2}$
+$X \sim \mbox{Geo}(p)$ models the number of Bernoulli trials needed to get one success \\
+$p(x) = (1-p)^{x-1}p$, $M_X(t) = \frac{pe^t}{1-(1-p)e^t}$, $E[X] = \frac{1}{p}$, $\V(X) = \frac{1-p}{p^2}$
+
+\subsection{Poisson Distribution}
+$X\sim \mbox{Poi}(\lambda)$ models the number of times a given event occurs independently in a fixed interval \\
+$p(x) = e^{-\lambda}\frac{\lambda^x}{x!}$, $M_X(t) = e^{\lambda(e^t - 1)}$, $E[X] = \V(X) = \lambda =$ rate at which event occurs \\
+Approximates binomial well when $n$ is large, $p$ is small and $\lambda = np$ is moderate
 
 \subsection{Uniform Distribution}
-$X\sim U(a, b)$, $\E[X] = \frac{1}{2}(a+b)$, $\V(X) = \frac{(b-a)^2}{12}$ \\
-$f(x) = \begin{cases} \frac{1}{b-a} & \text{if } a < x < b \\ 
-0 & \text{otherwise} \end{cases}$ , $M_X(t) = \frac{e^{tb} - e^{ta}}{t(b-a)}$
+$X\sim U(a, b)$, $f(x) = \frac{1}{b-a}$ for $a \leq x \leq b$, $M_X(t) = \frac{e^{tb} - e^{ta}}{t(b-a)}$, $E[X] = \frac{1}{2}(a+b)$, $\V(X) = \frac{(b-a)^2}{12}$ 
 
 \subsection{Exponential Distribution}
-$X\sim Exp(\lambda)$, $\E[X] = \frac{1}{\lambda}$, $\V(X) = \frac{1}{\lambda^2}$ \\
-$f(x) = \begin{cases} \lambda e^{-\lambda x} & \text{if } x \geq 0 \\ 
-0 & \text{otherwise} \end{cases}$ , $M_X(t) = \frac{\lambda}{\lambda - t}$ \\
-$\P(X > s + t | X > s) = \P(X > t)$ as exponential variables are memoryless and vice-versa.
+$X\sim \mbox{Exp}(\lambda)$ models the time between events in a Poisson process with rate $\lambda$ \\
+$f(x) = \lambda e^{-\lambda x}$ for $x \geq 0$, $M_X(t) = \frac{\lambda}{\lambda - t}$, $E[X] = \frac{1}{\lambda}$, $\V(X) = \frac{1}{\lambda^2}$ \\
+Key property memoryless and continuous analogue of the geometric distribution 
 
-\subsection{Normal Distribution}
-$X\sim \mathcal{N}(\mu, \sigma^2)$, $\E[X] = \mu$, $\V(X) = \sigma^2$, $f(x)=\frac{1}{\sigma \sqrt{2\pi}}e^{\frac{-(x-\mu)^2}{2\sigma^2}}$, $M_X(t) = e^{\mu t + \frac{\sigma^2 t^2}{2}}$\\
-If $Z = \frac{X-\mu}{\sigma}$, then $Z\sim \mathcal{N}(0, 1)$ and we define $\phi(z) = \P(Z \leq z)$, $\phi(z) = 1-\phi(-z)$\\
-$\P[a\leq X \leq b] = \P[X \leq b] - \P[X \leq a] = \phi(\frac{b-\mu}{\sigma}) - \phi(\frac{a-\mu}{\sigma})$ 
+\subsection{Gamma Distribution}
+$X \sim \mbox{Gamma}(\alpha, \beta)\mbox{ models the amount of time until }\alpha\mbox{ events occur in a Poisson process with rate }\beta$ \\
+$f(x) = \frac{\beta ^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\beta x}$, $M_X(t) = (\frac{\beta}{\beta - t})^\alpha$, $E[X] = \frac{\alpha}{\beta}$, $\V(X) = \frac{\alpha}{\beta ^2}$
 
+\subsection{Gaussian Distribution}
+$X\sim \mathcal{N}(\mu, \sigma^2)$, $f(x)=\frac{1}{\sigma \sqrt{2\pi}}\exp (\frac{-(x-\mu)^2}{2\sigma^2})$, $M_X(t) = e^{\mu t + \frac{\sigma^2 t^2}{2}}$, $E[X] = \mu$, $\V(X) = \sigma^2$ \\
+$P(a\leq X \leq b) = P(Z \leq \frac{b-\mu}{\sigma}) - P(Z \leq \frac{a-\mu}{\sigma})$, where $Z \sim \mathcal{N}(0, 1)$ \\
+Approximates binomial well (with continuity correction) when $np$ and $n(1-p) > 5$ 
 
-\section{Miscellaneous}
-The joint $f_{X,Y}(x,y) = g(x^2 + y^2)$ is radial if and only if the marginals are Gaussian. 
+\subsection{Multivariate Gaussian}
+$X\sim \mathcal{N}(\boldsymbol \mu, \boldsymbol \Sigma)$, where $f(\boldsymbol{x}) = \frac{1}{(2\pi)^{\sfrac{d}{2}} \abs{\boldsymbol \Sigma}^{\sfrac{1}{2}}}\exp{(-\frac{1}{2}(\boldsymbol x-\boldsymbol \mu)^T \boldsymbol \Sigma^{-1} (\boldsymbol x-\boldsymbol \mu))}$ \\
+The diagonal entries of $\boldsymbol \Sigma$ are the variances and stretch the density in the $i$th direction(-ish) \\
+$\boldsymbol \Sigma_{ij} = \boldsymbol \Sigma_{ji}$ for $i \neq j$ are the covariances and linearly correlate the $i$th and $j$th directions \\
+If the joint $f(\boldsymbol x)$ is radially symmetric, then $\boldsymbol \Sigma_{ij} = 0$ for $i \neq j$ and $\boldsymbol \Sigma_{ii} = \boldsymbol \Sigma_{jj}$ for $i = j$
 
-\subsection{Fundamental Theorem of Calculus}
-Let $f$ be a continuous real-valued function on $[a, b]$ and $F$ be the antiderivative of $f$. \\
-Then $\int_a^b f(t) dt = F(b) - F(a)$ and $\frac{d}{dx}\int_a^x f(t)dt = f(x)$ 
-\subsection{Integrals}
-$\int udv = uv - \int vdu$, $\int_0^{\infty}f(x)dx = \lim\limits_{b\to\infty}\int_0^bf(x)dx$ \\
-$\int_{s}^{\infty}\lambda e^{-\lambda x}dx = e^{-\lambda s}$, $\int xe^{-\lambda x}dx = \frac{1}{\lambda^2}(-\lambda e^{-\lambda x}x -e^{-\lambda x}) + C$ \\
+\subsection{Laplace Distribution}
+$X \sim \mbox{Laplace}(\mu, b)$, $f(x) = \frac{1}{2b} \exp (-\frac{\abs{x - \mu}}{b})$, $M_X(t) = \frac{\exp(\mu t)}{1 - b^2t^2}$, $E[X] = \mu$, $\V(X) = 2b^2$ \\
+If $X, Y \sim \mbox{Exp}(\lambda)$, then $X - Y \sim \mbox{Lap}(0, \lambda ^{-1})$. If $X \sim \mbox{Lap}(\mu, b)$, then $kX + c \sim \mbox{Lap}(k\mu + c, kb)$ \\
+Laplace has a fatter tail and taller head than the Gaussian due to abs. value and constant term
+
+\subsection{Beta Distribution}
+$X \sim \mbox{Beta}(\alpha, \beta)$ represents a distribution of probabilities of an uncertain binomial variable \\
+$f(x) = \frac{1}{B(\alpha, \beta)}x^{\alpha -1}(1-x)^{\beta - 1}$, where $x \in [0, 1]$, $\alpha, \beta > 0$ and $E[X] = \frac{\alpha}{\alpha + \beta}$ \\
+Note $B(\alpha, \beta) = \frac{\Gamma(\alpha)\Gamma(\beta)}{\Gamma(\alpha + \beta)}$ is the beta function and $\Gamma(n) = (n-1)!$ is the gamma function \\
+Well suited to represent a prior, as the posterior after $n$ Bernoulli trials is $\mbox{Beta}(\alpha + \mbox{ success}, \beta + \mbox{ fail})$
+
+\subsection{Dirichlet Distribution}
+$X \sim \mbox{Dir}(\boldsymbol \alpha)$ represents a distribution of probabilities of an uncertain multinomial variable \\
+$f(\boldsymbol x) = \frac{1}{B(\boldsymbol \alpha)} \prod\limits_{i=1}^Kx_{i}^{\alpha_i -1}$, where $x_i \in [0, 1]$, $\sum_i x_i = 1$, $\alpha_i > 0$ and $E[X_i] = \frac{\alpha_i}{\sum_k \alpha_k}$
+
+\section{Calculus}
+Let $f$ be a continuous real-valued function on $[a, b]$ and $F$ be the antiderivative of $f$ \\
+Then $\int_a^b f(t) dt = F(b) - F(a)$ and $\frac{d}{dx}\int_a^x f(t)dt = f(x)$ \\
+$\int udv = uv - \int vdu$, $\int_{s}^{\infty}\lambda e^{-\lambda x}dx = e^{-\lambda s}$, $\int xe^{-\lambda x}dx = \frac{1}{\lambda^2}(-\lambda e^{-\lambda x}x -e^{-\lambda x}) + C$ \\
 $\int \frac{1}{1+x^2}dx = \arctan(x) + C$, $\int \frac{x^2}{1+x^2} dx = \int 1 - \frac{1}{1+x^2}dx$, $\int \frac{x^3}{1+x^2} dx = \int x - \frac{x}{1+x^2}dx$ 
 
 

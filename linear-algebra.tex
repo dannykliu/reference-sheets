@@ -48,7 +48,7 @@
 
 \section{Basic Knowledge}
 A vector space is an Abelian group under vector addition with defined scalar multiplication over $\F$ \\
-$v_1, v_2, ..., v_n$ linearly independent when $c_1v_1 + c_2v_2 + \ldots + c_nv_n = 0$ has only the trivial solution\\
+$v_1, v_2, ..., v_n$ is linearly independent when $c_1v_1 + c_2v_2 + \ldots + c_nv_n = 0$ has only the trivial solution\\
 If $E$ is an elementary matrix, then $EA$ performs a row operation and $AE$ a column operation \\
 $A \sim B$ if they represent the same linear operator under possibly different bases, written ${B = PAP^{-1}}$  
 
@@ -121,7 +121,7 @@ $D = [A]_B$ where $B$ is the basis consisting of eigenvectors of $A$ and $P^{-1}
 \subsection{Spectral Theorem}
 If $\V$ is a real inner-product space and $T \in \linear(\V)$, then $\V$ has an orthonormal basis consisting of eigenvectors of $T$ if and only if $T$ is self-adjoint (symmetric). \\
 If $A$ is orthogonally diagonalizable, then $A^T = (PDP^{-1})^T = (P^{-1})^TDP^T = PDP^{-1} = A$ \\
-$\mbox{If } A \mbox { is symmetric, then } (A-\lambda I)^2v = 0 \implies v^T(A-\lambda I)^2v = 0 \implies ((A-\lambda I)v)^2 = 0 \implies Av = \lambda v$
+${\mbox{If } A \mbox { is symmetric, then } (A-\lambda I)^2v = 0 \implies v^T(A-\lambda I)^2v = 0 \implies \norm{(A-\lambda I)v}^2 = 0 \implies Av = \lambda v}$
 
 \section{Singular Value Decomposition}
 Any real $m \times n$ matrix $A$ can be factored into $A = U \Sigma V^T$ where $U, V$ are orthogonal matrices whose columns are the orthonormal eigenvectors of $AA^T$ and $A^TA$ respecitvely and $\Sigma$ is the $m \times n$ diagonal matrix of the square roots of the nonzero eigenvalues values of $A^TA$.
@@ -177,7 +177,7 @@ The adjoint of $T \in \linear(\V, \W)$ is $T^* \in \linear(\W, \V)$ such that $\
 $\mbox{If } B \mbox { is an orthonormal basis for }\V, \mbox{ then }[T^*]_B = [T]_B^* \mbox{ where } [T]_B^* \mbox{ is the conjugate transpose of } [T]_B$
 
 \subsection{Orthogonal Projections}
-$\PProj[v] {u} = \frac{\inner{u}{v}}{\inner{v}{v}} v = \frac{\norm u \norm v \cos \theta}{{\norm v}^2}v = \frac{(u_1v_2 + \ldots u_nv_n)\hat{v}}{\norm v}  = \norm u \cos \theta \hat{v}$ \\
+$\PProj[v] {u} = \frac{\inner{u}{v}}{\inner{v}{v}} v = \frac{\norm u \norm v \cos \theta}{{\norm v}^2}v = \frac{(u_1v_1 + \ldots u_nv_n)\hat{v}}{\norm v}  = \norm u \cos \theta \hat{v}$ \\
 The orthogonal complement of $\U \subseteq \V$ is $\U^{\perp} = \{v \in \V \mid \inner{v}{u} = 0 \mbox{ }\forall u \in \U \}$ \\
 $\V^{\perp} = \{\boldsymbol{0}\}$ and $\U^{\perp}$ is always a subspace of $\V$. If $\U \subseteq \V$ is a subsapce, then $\V = \U \oplus \U^{\perp}$ \\
 Let $\U \subseteq \V$ be a subspace. The orthogonal projection of $\V$ onto $\U$ is the operator $P_{\U}$ where if $v = u + w$ where $u \in \U$ and $w \in \U^{\perp}$, then $P_{\U}(v) = u$ \\
