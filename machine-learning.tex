@@ -1,0 +1,229 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb, amsmath, geometry, nopageno, xfrac, nicefrac, mathtools}
+\usepackage{graphicx, multicol}
+\graphicspath{ {./images/} }
+
+\setlength{\textheight}{600pt}
+
+\DeclareMathOperator{\im}{Im}
+\DeclareMathOperator{\PProjection}{proj}
+
+
+\newcommand{\Z}{\mathbb{Z}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\V}{\mbox{Var}}
+\newcommand{\C}{\mbox{Cov}}
+\renewcommand{\H}{\mathcal{H}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand\inner[2]{\langle #1, #2 \rangle}
+\newcommand{\vct}{\mathbf}
+\newcommand{\PProj}[2][]{\PProjection_{\vct{#1}}\vct{#2}}
+
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin} 
+\DeclareMathOperator{\rank}{rank} 
+\DeclareMathOperator{\diag}{diag} 
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+
+
+\title{Machine Learning Reference Sheet}
+\author{By Danny Liu}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Basic Knowledge}
+$\mbox{Machine learning: study of algorithms that improve their performance }P\mbox{ at some task }T\mbox{ with exp }E$ \\
+Supervised learning: Given labeled training examples, learn mapping that labels unseen examples \\
+Unsupervised learning: Given unlabeled inputs, learn some intrinsic structure in inputs \\
+$\mbox{Reinforcement learning: Given agent interacting in environment, learn policy that maximizes reward}$ \\
+Given hypothesis space $\mathcal{H}$, labeled training data $\mathcal{X}, \mathcal{Y} = \{(x^{(i)}, y^{(i)})\}_{i=1}^n$ such that $(x^{(i)}, y^{(i)}) \sim p(x,y)$ and unknown target function $f: \mathcal{X} \to \mathcal{Y}$, learn $h \in \mathcal{H}$ that best approximates $f$
+
+\section{Optimization}
+Batch gradient descent does one step using $n$ examples: $ \theta \leftarrow \theta - \alpha \nabla_\theta J(\theta)$ \\
+Stochastic gradient descent does one step \textit{per} example: $\theta \leftarrow \theta - \alpha \nabla_\theta J_i(\theta)$ \\
+Learning rate $\alpha_k = \frac{1}{1+k}$ where $k = \mbox{outer loop iteration}$ is typically a good choice
+\subsection{Newton's Method}
+Iteratively find better approximations for roots of differentiable function by $x_{n+1} = x_n - \frac{f(x_n)}{f^\prime(x_n)}$ \\
+In optimization, find critical points of twice differentiable function by $\boldsymbol{x}_{n+1} = \boldsymbol{x}_n - \gamma \boldsymbol{H}f(\boldsymbol{x}_n)^{-1} \nabla f(\boldsymbol{x}_n) $ \\
+Often converges in fewer steps than gradient descent, but computing $\boldsymbol{H}_f^{-1}$ is costly 
+
+\section{Experimentation and Evaluation}
+blah
+
+\section{Principal Component Analysis}
+blah
+
+\section{Ensemble Methods}
+blah
+
+\section{Multiclass Classification}
+blah
+
+\section{Decision Trees}
+Leaf nodes predict $Y$ or $p(Y|X \in \mbox{leaf})$ \\ 
+Internal nodes test one feature $X_i$ against threshold and each branch selects value for $X_i$ \\
+Decision trees are rule based classifiers that divide feature space into axis-parallel (hyper-)rectangles \\
+Reduce overfitting with max\_depth, max\_features, min\_samples\_split, min\_samples\_leaf, etc...
+
+\subsection{Entropy}
+$H(X) = -\sum \limits_{i=1}^n p(X = i)\log_2 p(X=i)$ measures impurity/uncertainty of random variable \\
+$H(Y| X) = \sum \limits_{v \in X}p(X = v)H(Y | X = v)$ gives conditional entropy of $Y$ given $X$ \\
+$I(Y, X) = H(Y) - H(Y|X) = I(X, Y)$ gives info-gain/mutual information of $Y$ and $X$ \\
+Assuming sender and receiver know distribution, how many bits on average to transmit one symbol? \\
+${p(X = 1) = 1 \implies H(X) = 0\mbox{, } p(X = 1) = 0.5 \implies H(X) = 1\mbox{, } p(X = 1) = 0.9 \implies H(X) = 0.136}$ 
+\subsection{ID3 Algorithm}
+Starting at root, if entropy is 0 or all feature values are equal, create leaf nodes \\
+Else, choose feature $X_i$ and threshold $c$ based on largest info-gain / minimum conditional entropy \\
+For each value of $X_i$, create new descendent, sort training examples to descendent nodes and recurse
+
+
+\section{Generative Learning Algorithms}
+Discriminative algorithms (d-trees, softmax, svms, kNN, k-means, etc..) try to learn $p(y|x)$ \\
+Generative algorithms model $p(y)$ and $p(x|y)$ and then make predictions by maximizing the posterior probability $\argmax\limits_y p(y|x) = \argmax\limits_y \frac{p(x|y)p(y)}{p(x)} = \argmax\limits_y p(x|y)p(y)$ 
+
+\subsection{Gaussian Discriminant Analysis}
+Assume $y \sim \mbox{Bernoulli}(\phi)$, $x|y=0 \sim \mathcal{N}(\mu_0, \Sigma)$, $x|y=1 \sim \mathcal{N}(\mu_1, \Sigma)$, then \\
+$p(y) = \phi^y (1-\phi)^{1-y}$, $p(x|y=j) = \frac{1}{ (2 \pi)^{\sfrac{d}{2}} \abs{\Sigma} ^{\sfrac{1}{2}}}\exp \big(-\frac{1}{2}(x-\mu_j)^T\Sigma^{-1}(x-\mu_j)\big)$, gives us likelihood \\
+$\ell(\phi, \mu_0, \mu_1, \Sigma) = \log \prod\limits_{i=1}^np(x^{(i)}, y^{(i)}; \phi, \mu_0, \mu_1, \Sigma) = \log \prod\limits_{i=1}^np(x^{(i)} | y^{(i)}; \mu_0, \mu_1, \Sigma)p(y^{(i)}; \phi)$, solving \\
+$\phi = \frac{1}{n}\sum\limits_{i=1}^n 1\{y^{(i)} = 1\}$, $\mu_j = \frac{\sum_{i=1}^n 1\{y^{(i)} = j\} x^{(i)}} {\sum_{i=1}^n 1\{y^{(i)} = j\}}$, $\Sigma = \frac{1}{n}\sum\limits_{i=1}^n (x^{(i)} - \mu_{y^{(i)}})(x^{(i)} - \mu_{y^{(i)}})^T$ \\
+By viewing $p(y=1|x) = f_1(x)$, we can write $p(y=1|x) = \frac{1}{1+\exp(-\theta^Tx)}$ where $\theta = f_2(\phi, \Sigma, \mu_0, \mu_1)$ \\
+If $p(x|y)$ is Gaussian, then $p(y|x)$ is logistic. However, the assumption  $x|y = j \sim \mbox{Poisson}(\lambda_j)$ still leads to a logistic posterior. Hence GDA makes a stronger assumption that data is Gaussian \\
+Note that while there are two mean vectors $(\mu_0, \mu_1)$, GDA typically shares the covariance matrix $\Sigma$
+
+\subsection{Naive Bayes}
+Assume $y \sim \mbox{Multinoulli}(\boldsymbol \phi)$ and $p(x|y) = \prod\limits_{i=1}^d p(x_i | y)$, then our prediction rule is simply \\
+$\argmax\limits_y p(y | x) = \argmax\limits_y p(x|y)p(y) = \argmax\limits_y \prod\limits_{i=1}^d p(x_i | y) p(y)$ \\
+If $x_i$ is categorial or continuous, then we can split it into $k_i$ Bernoullis by discretizing
+
+\section{Linear Regression}
+Assume $\epsilon^{(i)} \sim \N(0, \sigma^2)$, $y^{(i)} = \theta^Tx^{(i)} + \epsilon^{(i)}$, then \\
+$p(\epsilon^{(i)}) = \frac{1}{\sqrt{2 \pi} \sigma} \exp \big ({\frac{-(y^{(i)} - \theta^T x^{(i)})^2}{2\sigma^2}} \big) = p(y^{(i)} | x^{(i)} ; \theta)$ gives us likelihood \\
+$\ell(\theta) = \log \prod\limits_{i=1}^n p(y^{(i)} | x^{(i)} ; \theta) = \log \prod\limits_{i=1}^n \frac{1}{\sqrt{2 \pi} \sigma} \exp \big ({\frac{-(y^{(i)} - \theta^T x^{(i)})^2}{2\sigma^2}} \big) $ \\
+\hspace*{0.577cm} $ = \sum\limits_{i=1}^n [-\log(\sqrt{2\pi}\sigma) - \frac{1}{2\sigma^2} (y^{(i)} - \theta^T x^{(i)})^2] = -n\log(\sqrt{2\pi}\sigma) - \frac{1}{\sigma^2} J(\theta) $ \\
+$J(\theta) = \frac{1}{2} \sum\limits_{i=1}^n (h_\theta(x^{(i)}) - y^{(i)})^2 = \frac{1}{2} (X\theta - y)^T(X\theta - y)$ \\
+$\frac{\partial J}{\partial \theta_j} = \sum\limits_{i=1}^n (h_\theta(x^{(i)}) - y^{(i)})x_j^{(i)}$, $\frac{\partial J}{\partial \theta_j \partial\theta_k} = \sum\limits_{i=1}^n x_j^{(i)}x_k^{(i)}$ \\
+$\nabla_\theta J(\theta) = \theta^TX^TX - y^TX \implies X^TX\theta = X^Ty$, $\nabla_\theta^2 J(\theta)^T = X^TX \succeq 0$ \\
+Note that $\rank X = \rank X^T = \rank XX^T = \rank X^TX $, so $\theta$ always has a solution \\
+$X^TX$ is singular when $X$ has dependent columns, but inverting is very costly $O(d^3)$ anyways
+
+\section{Logistic Regression}
+Assume $y|x ; \theta \sim \mbox{Bernoulli}(\phi)$, $\theta^T x = \log \frac{\phi}{1-\phi}$, then $\phi = \frac{1}{1+e^{-\theta^T x}} = h_\theta(x)$ gives us likelihood \\
+$\ell(\theta) =\log \prod\limits_{i=1}^n p(y^{(i)} | x^{(i)} ; \theta) = \log \prod\limits_{i=1}^n (h_\theta(x^{(i)}))^{y^{(i)}}(1-h_\theta(x^{(i)}))^{1-y^{(i)}}$ \\
+\hspace*{0.577cm} $ = \sum\limits_{i=1}^n y^{(i)}\log h_\theta(x^{(i)}) + (1-y^{(i)})\log (1-h_\theta(x^{(i)})) = - J(\theta)$ \\
+$\nabla_\theta J(\theta) = X^T (\sigma(X\theta) - y)$, $\nabla_\theta^2 J(\theta)^T =  X^T \diag \sigma^\prime (X\theta)X \succeq 0$ \\
+Note $\sigma(z) = \frac{1}{1+e^{-z}}$ is the sigmoid function and $\sigma^\prime(z) = \sigma(z)(1-\sigma(z))$
+
+
+\section{Softmax Regression}
+Assume $y|x ; \theta_1, \ldots, \theta_k \sim \mbox{Cat}(\phi_1, \ldots, \phi_k)$, $\theta_j^Tx = \log\frac{\phi_j}{\phi_k}$, then \\
+$\sum\limits_{j=1}^k \phi_j = \sum\limits_{j=1}^k e^{\theta_j^Tx}\phi_k = 1 \implies \phi_j = \frac{e^{\theta_j^Tx}}{\sum_{l=1}^k e^{\theta_l^Tx}} = h_{\theta_j}(x)$ gives us likelihood \\
+$\ell(\boldsymbol \theta) = \log \prod\limits_{i=1}^n p(y^{(i)} | x^{(i)} ; \boldsymbol \theta) = \log \prod\limits_{i=1}^n \prod\limits_{j=1}^k (h_{\theta_j}(x^{(i)}) )^{1\{y^{(i)}_j = 1\}} = \sum\limits_{i=1}^n \sum\limits_{j=1}^k y_j^{(i)}\log h_{\theta_j}(x^{(i)}) = - J(\boldsymbol \theta)$
+
+
+\section{Regularization}
+Assuming the prior $\theta \sim \N(0, \lambda^{-1}I)$ is equivalent $\ell_2$ regularization in the MAP estimate \\
+$\argmax\limits_\theta \log p(\theta | D) = \argmax\limits_\theta \log p(D | \theta) p(\theta) = \argmax\limits_\theta \log p(D| \theta) + \log p(\theta)$ \\
+\hspace*{2.717cm} $ = \argmax\limits_\theta \log p(D| \theta) + \log \Big(\frac{1}{(2\pi)^{\sfrac{d}{2}} \abs{\lambda^{-1}I}^{\sfrac{1}{2}}}\exp{(-\frac{1}{2} \theta^T (\lambda^{-1}I)^{-1} \theta)}\Big) $ \\
+\hspace*{2.717cm} $ =\argmax\limits_\theta  \log p(D| \theta) - \frac{\lambda}{2}\norm {\theta_{1:d}}_2^2$ \\
+Assuming the prior $\theta_i \sim \mbox{Lap}(0, \frac{1}{\lambda})$ is equivalent to $\ell_1$ regularization in the MAP estimate \\
+$\argmax\limits_\theta \log p(\theta | D) = \argmax\limits_\theta \log p(D| \theta) + \log \prod\limits_{i=1}^d \frac{1}{2 (\sfrac{1}{\lambda})}\exp (-\frac{\abs{ \theta_i}}{\sfrac{1}{\lambda}})$ \\
+\hspace*{2.717cm} $ =  \argmax\limits_\theta \log p(D| \theta) -\lambda \norm{\theta_{1:d}}_1$ \\
+$\ell_1$ regularization results in sparser solutions as it's more likely for the loss function to touch the axis aligned spikes first, but is not differentiable. Laplace prior also places more mass at $\theta_i = 0$ 
+
+
+\section{Support Vector Machines}
+blah
+
+\section{k-Nearest Neighbors}
+blah
+
+\section{Clustering}
+The $\ell_p$ norm is defined by $\norm{x}_p = \big(\sum\limits_{i=1}^n \abs{x_i}^p \big)^{\sfrac{1}{p}}$. Note $\norm{x}_2^2 = x^Tx$ \\
+The mean minimizes the $\ell_2$ norm on a set of points whereas the median minimizes the $\ell_1$ norm 
+
+\section{Hidden Markov Models}
+Stochastic process: a collection or r.vs that evolve over time. \\
+Markov property: conditional distribution of future states depends only on the current state. \\
+A Markov chain is a stochastic process with the Markov property. \\
+MC modeled as a 3-tuple $(S, \pi, A)$ and outputs observable state $O_t \in S$ \\
+$\P(O | \lambda) = \P(q_1, ..., q_T) = \P(q_1)\P(q_2 | q_1)...\P(q_T | q_{T-1})$ \\
+Hidden Markov Models assume there is an underlying stochastic process that affects observations.
+\subsection{HMM Elements}
+\begin{enumerate}
+\item $S = \{S_1, ..., S_N\}$ where the states are $q_t \in S$ 
+\item $V = \{v_1, ..., v_m\}$ where the observations are $O_t \in V$
+\item $\pi = \{\pi_i\}$ where $\pi_i = \P(q_1 = S_i)$
+\item $A = \{a_{ij}\}$ where $a_{ij} = \P(q_t = S_j | q_{t-1} = S_i)$
+\item $B = \{b_j(k)\}$ where $b_j(k) = \P(v_k \mbox{ at t} | q_t = S_j)$
+\end{enumerate}
+\subsection{Forward-Backward Algorithm}
+Scores an observation sequence $O$ over one path $q$ or over all possible paths. \\
+Define forward variable $\alpha_t(i) = \P(O_1, O_2, ..., O_t, q_t = S_i | \lambda)$
+\begin{enumerate}
+\item Initialize $\alpha_1(i) = \pi_i b_i(O_1)$ for $1 \leq i \leq N$
+\item Induct $\alpha_{t+1}(j) = \sum_{i=1}^N \alpha_t(i)a_{ij} b_j(O_{t+1})$ for $1 \leq t \leq T -1$ and $1 \leq j \leq N$
+\item Terminate $\P(O | \lambda) = \sum_{i=1}^N \alpha_T(i)$
+\end{enumerate}
+\subsubsection{Backward Algorithm}
+Define backward variable $\beta_t(i) = \P(O_{t+1}, O_{t+2}, ..., O_T, q_t = S_i | \lambda)$
+\begin{enumerate}
+\item Initialize $\beta_T(i) = 1$ for $1 \leq i \leq N$
+\item Induct $\beta_{t}(i) = \sum_{j=1}^N \beta_{t+1}(j) a_{ij} b_j(O_{t+1})$ for $T-1 \geq t \geq 1$ and $1 \leq i \leq N$
+\end{enumerate}
+\subsection{Posterior Decoding}
+Find most likely state at every point in time. Want $q^* = \{q_t | q_t = \argmax_{S_i}\P(q_t = S_i | O, \lambda)\}$ \\
+Define $\gamma_t(i) = \P(q_t = S_i | O, \lambda) = \cfrac{\P(O, q_t = S_i | \lambda)}{\P(O | \lambda)} = \cfrac{\alpha_t(i)\beta_t(i)}{\sum_{i=1}^N \alpha_t(i)\beta_t(i)}$
+\subsection{Viterbi Decoding}
+Find most likely path $q^*$ given observation sequence. Want $q^* = \argmax_q \P(q | O, \lambda) = \argmax_q \P(q, O | \lambda)$ \\
+Define Viterbi probability $\delta_t(i) = \max\limits_{q_1, ..., q_{t-1}}\P(q_1, ..., q_{t-1}, O_1, ..., O_t, q_{t} = S_i| \lambda)$ \\
+We see that $\delta_t(i)= \P(O_t | q_t = S_i) \max\limits_{q_{t-1}} \P(q_t | q_{t-1}) \max\limits_{q_1, ..., q_{t-2}}\P(q_1, ..., q_{t-2}, O_1, ..., O_{t-1}, q_{t-1} = S_j | \lambda)$ \\
+Same as forward algorithm except replace $\alpha_t(i)$ with $\delta_t(i)$ and sum with $\max$. \\
+Need traceback $\psi_{t+1}(j) = \argmax\limits_{1 \leq i \leq N} \delta_t(i)a_{ij}$
+\subsection{Learning HMMs}
+Adjust model parameters $\lambda = (A, B, \pi)$ to maximize $\P(O | \lambda)$
+\subsubsection{Supervised Learning}
+Assume we know the underlying states. Use MLE. \\
+$\hat{\pi}_i = \cfrac{\mbox{Count}(q_i)}{\sum_{j=1}^N \mbox{Count}(q_j)}$, $\hat{a}_{ij} = \cfrac{\mbox{Count}(S_i \to S_j)}{\mbox{Count}(S_i)}$, $\hat{b}_j(k) = \cfrac{\mbox{Count}(S_j \to v_k)}{\mbox{Count}(S_j)}$ \\
+Add pseudocounts to represent prior belief. Large pseudocounts $\to$ large regularization.
+\subsubsection{Unsupervised Learning. Baum-Welch}
+Do not know the underlying states. Use EM. \\
+Define $\xi_t(i,j) = \P(q_t = S_i, q_{t+1} = S_j | O, \lambda) = \cfrac{\P(q_t = S_i, q_{t+1} = S_j, O | \lambda)}{\P(O | \lambda)} = \cfrac{\alpha_t(S_i)a_{ij}b_j(O_{t+1})\beta_{t+1}(S_j)}{\P(O | \lambda)}$ \\
+$\hat{\pi}_i = \gamma_1(i)$, $\hat{a}_{ij} = \cfrac{\sum_{t=1}^{T-1}\xi_t(i,j)}{\sum_{t=1}^{T-1}\gamma_t(j)}$, $\hat{b}_j(k) = \cfrac{\sum_{t=1 \mbox{ s.t } O_t = v_k}^{T} \gamma_t(j)}{\sum_{t=1}^{T}\gamma_t(j)}$ \\
+Randomly initialize model parameters $\lambda = (A, B, \pi)$. \\
+Compute $\alpha_t(i)$, $\beta_t(i)$ and $\P(O| \lambda) $using forward-backward algorithm (E-step). \\
+Compute $\gamma_t(i)$, $\xi_t(i,j)$ and then update model parameters (M-step).
+
+\section{Learning Theory}
+Let $R_n(h)$ be the training error and $R(h)$ be the expected error of $h \in \H$ 
+\subsection{Haussler's Theorem}
+Given finite hypothesis space $\H$, dataset $\D$ with $n$ iid training and $0 \leq \epsilon \leq 1$, then for any learned hypothesis $h$ that is consistent with the training data, $\P(R(h) > \epsilon) \leq |\H| e ^{-n\epsilon}$
+\subsection{Hoeffding Inequality}
+Let $Z_1, Z_2, ..., Z_n$ be $n$ iid r.vs drawn Bernoulli($\phi$) and $\hat{\phi} = \frac{1}{n}\sum_{i=1}^n Z_i$ be the mean of the $Z_i$'s. Then for any $\gamma > 0$, $\P(|\phi - \hat{\phi}| > \gamma) \leq 2e^{-2n\gamma^2}$ \\
+Using the union bound we can derive $\P[R(h) - R_n(h) > \epsilon] \leq |\H| e^{-2n\epsilon^2}$ for any $h \in \H$
+\subsection{PAC Bounds}
+Suppose we are willing to tolerate at most a $\delta$ probability of having $> \epsilon$ error. \\ 
+Then for consistent hypotheses, $n \geq \frac{\ln |\H| + \ln \frac{1}{\delta}}{\epsilon}$ gives the minimum $n$ for which $\P(R(h) \leq \epsilon) \geq 1 - \delta$ \\
+And for any learned hypotheses, $n \geq \frac{1}{\epsilon^2}\big(\ln(|\H|) + \ln(\frac{1}{\delta}) \big)$ and $\epsilon \geq \sqrt{\frac{1}{2n} \big(\ln |\H| + \ln \frac{1}{\delta} \big)}$
+\subsection{Bias-Variance Tradeoff}
+Since $\P(R(h) - R_n(h) \leq \epsilon) \geq 1 - \delta$, it follows that $R(h) \leq R_n(h) +\sqrt{\frac{1}{2n} \big(\ln |\H| + \ln \frac{1}{\delta} \big)}$ \\
+Where a large $\H$ implies low bias (assuming we find good $h \in \H$) but high variance.
+\subsection{VC-Dimension}
+A set $S = \{x^{(1)}, ..., x^{(m)}\}$ of points $x^{(i)} \in \X$ can be shattered by hypothesis class $\H$ if and only if for any set of labels $\{y^{(1)}, ..., y{(m)} \}$, there exists a consistent $h \in \H$ \\
+The VC-dimension over $\X$ is the size or the largest set of points in $\X$ that is shattered by $\H$ \\
+$\mbox{VC}(\H) = d + 1$ where $\H$ is the set of linear classifiers with bias in $\R^d$ \\
+If $|\H| = \infty$ but $\mbox{VC}(\H) = d$ in $\X$, then $R(h) \leq R_n(h) +\sqrt{\frac{1}{2n} \big[d \big(\ln \frac{2n}{d} + 1\big) + \ln \frac{4}{\delta} \big]}$ 
+\subsubsection{$\mbox{VC}(\H)$ for SVMs}
+Let $\H_\gamma$ be the set of classifiers in $\R^d$ with margin $\gamma$ on $\X$ where each $x^{(i)} \in \X$ satisfies $\lVert x^{(i)} \rVert \leq R$. \\
+Then $\mbox{VC}(\H_\gamma) \leq \min \Big\{d, \frac{4R^2}{\gamma^2} \Big\}$
+
+
+\end{document}
+
