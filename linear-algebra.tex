@@ -59,9 +59,9 @@ $f: \real^n \rightarrow \real$ is convex $\iff {\boldsymbol{H}_{\boldsymbol{f}} 
 Taylor expansion of $f$ at $\boldsymbol{z} \in [\boldsymbol{x}, \boldsymbol{y}]$ is $f(\boldsymbol{y}) =  f(\boldsymbol{x}) + {\nabla f(\boldsymbol{x})}^T (\boldsymbol{y}-\boldsymbol{x}) + \frac{1}{2}(\boldsymbol{y}-\boldsymbol{x})^TH_f(\boldsymbol{z})(\boldsymbol{y}-\boldsymbol{x})$
 
 \subsection{Vectorization}
-$\nabla_x x^TAx = \nabla_x (\sum_{i, j}x_i x_j A_{ij}) = x^T(A + A^T)$, $\nabla_x Ax = A$, $\nabla_x x^Ty = y^T$, $\nabla_x x^Tx = 2x^T$ \\
+$\nabla_x x^TAx = \nabla_x (\sum_{i, j}x_i x_j A_{ij}) = (A + A^T)x$, $\nabla_x Ax = A$, $\nabla_x x^Ty = y$, $\nabla_x x^Tx = 2x$ \\
 $\sum_i(\sigma(\theta^Tx^{(i)}) - y^{(i)})x^{(i)} = X^T(\sigma(X\theta) - y)$, $\nabla_\theta \sigma(X\theta) = \diag(\sigma^\prime (X\theta))X$ \\
-$\nabla_x f = (\frac{\partial f}{\partial x_1}, \ldots , \frac{\partial f}{\partial x_n})$, $\boldsymbol{J}_{\boldsymbol{f}} = \begin{bmatrix} \frac{\partial \boldsymbol{f}}{\partial x_1} \ldots \frac{\partial \boldsymbol{f}}{\partial x_n} \end{bmatrix}$, $\boldsymbol{H}_{\boldsymbol{f}} = \boldsymbol{J}(\nabla_x f)^T$
+$\nabla_x f = (\frac{\partial f}{\partial x_1}, \ldots , \frac{\partial f}{\partial x_n})^T$, $\boldsymbol{J}_{\boldsymbol{f}} = \begin{bmatrix} \frac{\partial \boldsymbol{f}}{\partial x_1} \ldots \frac{\partial \boldsymbol{f}}{\partial x_n} \end{bmatrix}$, $\boldsymbol{H}_{\boldsymbol{f}} = \boldsymbol{J}(\nabla_x f)^T = \nabla_x^2f(x)^T$
 
 \section{Change of Basis}
 Let $B = \{b_1, b_2, ..., b_n\}$ a basis for $\V$ over $\F$ and $T \in \linear(\V)$. Then \\
