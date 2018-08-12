@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
-\usepackage{amssymb, amsmath, geometry, nopageno, xfrac, nicefrac, mathtools}
+\usepackage{amssymb, amsmath, geometry, nopageno, xfrac, nicefrac, mathtools, mathrsfs}
 \usepackage{graphicx, multicol}
 \graphicspath{ {./images/} }
 
@@ -45,26 +45,30 @@ Assume $(x^{(i)}, y^{(i)}) \sim p(x,y)$ is generated iid such that $f(x^{(i)}) =
 Parametric models assume $D \sim p(D; \theta)$ and so $D$ is no longer needed after $\theta$ has been estimated \\
 Non-parametric (memory-based) models store $D$ and interpolate them later for prediction \\
 Regression, linear svm, generative models (parametric) and d-trees, kNN, rbf svm (nonparametric) \\
-Feature importances, rf, regression, svm, \\
-The $\ell_p$ norm $\norm{x}_p = \big(\sum\limits_{i=1}^n \abs{x_i}^p \big)^{\sfrac{1}{p}}$ implicitly defines an inner product, where $\norm{x}_2 =  \sqrt{x^Tx}$ 
+kNN: find $k$ nearest neighbors of $x$ and predict majority label. If $k$ too small, overfitting to noise \\
+Curse of Dimensionality: Volume increases exponentially with dimensions so data becomes sparse 
 
-\section{Evaluating Performance}
-blah
+\subsection{Generative Learning Algorithms}
+Discriminative algorithms (d-trees, softmax, svms, kNN, k-means, etc..) try to learn $p(y|x)$ \\
+Generative algorithms model $p(y)$ and $p(x|y)$ and then make predictions by maximizing the posterior probability $\argmax\limits_y p(y|x) = \argmax\limits_y \frac{p(x|y)p(y)}{p(x)} = \argmax\limits_y p(x|y)p(y)$ 
 
-\section{Multiclass Classification}
-blah
+\subsection{Gaussian Discriminant Analysis}
+Assume $y \sim \mbox{Bernoulli}(\phi)$, $x|y=0 \sim \mathcal{N}(\mu_0, \Sigma)$, $x|y=1 \sim \mathcal{N}(\mu_1, \Sigma)$, which gives us \\
+$\ell(\phi, \mu_0, \mu_1, \Sigma) = \log \prod\limits_{i=1}^np(x^{(i)}, y^{(i)}; \phi, \mu_0, \mu_1, \Sigma) = \log \prod\limits_{i=1}^np(x^{(i)} | y^{(i)}; \mu_0, \mu_1, \Sigma)p(y^{(i)}; \phi)$, solving \\
+$\phi = \frac{1}{n}\sum\limits_{i=1}^n 1\{y^{(i)} = 1\}$, $\mu_j = \frac{\sum_{i=1}^n 1\{y^{(i)} = j\} x^{(i)}} {\sum_{i=1}^n 1\{y^{(i)} = j\}}$, $\Sigma = \frac{1}{n}\sum\limits_{i=1}^n (x^{(i)} - \mu_{y^{(i)}})(x^{(i)} - \mu_{y^{(i)}})^T$ \\
+By viewing $p(y=1|x) = f_1(x)$, we can write $p(y=1|x) = \frac{1}{1+\exp(-\theta^Tx)}$ where $\theta = f_2(\phi, \Sigma, \mu_0, \mu_1)$ \\
+If $p(x|y)$ is Gaussian, then $p(y|x)$ is logistic. However, the assumption  $x|y = j \sim \mbox{Poisson}(\lambda_j)$ still leads to a logistic posterior. Hence GDA makes a stronger assumption that data is Gaussian \\
+Note that while there are two mean vectors $(\mu_0, \mu_1)$, GDA typically shares the covariance matrix $\Sigma$
 
-\section{Principal Component Analysis}
-Assume data approximately lies on lower dimensional subspace
-
-\section{Ensemble Methods}
-blah
+\subsection{Naive Bayes}
+Assume $y \sim \mbox{Multinoulli}(\boldsymbol \phi)$ and $p(x|y) = \prod_{i} p(x_i | y)$, then our prediction rule is simply \\
+$\argmax\limits_y p(y | x) = \argmax\limits_y p(x|y)p(y) = \argmax\limits_y \prod_{i} p(x_i | y) p(y)$ 
 
 \section{Decision Trees}
 Leaf nodes predict $Y$ or $p(Y|X \in \mbox{leaf})$. Training time $O(dn\log n)$ \\ 
 Internal nodes test one feature $X_i$ against threshold and each branch selects value for $X_i$ \\
 Decision trees are rule based classifiers that divide feature space into axis-parallel (hyper-)rectangles \\
-Reduce overfitting with max\_depth, max\_features, min\_samples\_split, min\_samples\_leaf, etc...
+Random forests are a bag of decision tress with the additional property that only a subset $k < d$ features are considered at each split. Can determine feature importances by mean impurity decrease 
 
 \subsection{Entropy}
 $H(X) = -\sum \limits_{i=1}^n p(X = i)\log_2 p(X=i)$ measures impurity/uncertainty of random variable \\
@@ -77,10 +81,33 @@ Starting at root, if entropy is 0 or all feature values are equal, create leaf n
 Else, choose feature $X_i$ and threshold $c$ based on largest info-gain / minimum conditional entropy \\
 For each value of $X_i$, create new descendent, sort training examples to descendent nodes and recurse
 
-\section{k-Nearest Neighbors}
-For kNN, find $k$ nearest neighbors of $x$ and choose majority label as predicted class \\
-$k \propto \lambda$, as if $k$ is too small then we are overfitting to the noise. $k=1 \implies$ 100\% training accuracy \\
-Curse of Dimensionality: Volume increases exponentially with dimensions so data becomes sparse
+\section{Ensemble Methods}
+Bootstrap sampling: given $S_n$ with $n$ examples, create $S_n^\prime$ by sampling with replacement n times \\
+On average, a bootstrap sample contains $1-e^{-1} \approx 0.63$ of the original sample \\
+Bagging reduces variance without increasing bias by averaging results of $m$ independent classifiers \\
+To get independent classifiers, train distinct classifier on each of $m$ bootstrapped samples $S^{(1)}_n, \ldots, S^{(m)}_n$ 
+
+\subsection{Adaboost}
+Boosting reduces both bias and variance by combining simple weak learners into a strong ensemble \\
+Set $\widetilde{W}_0^{(i)} = \frac{1}{n}$ for $i = 1, \ldots, n$, then for $t = 1, \ldots, m$ \\
+Fit $h(x; \hat{\theta}_t)$ to weighted training set $\widetilde{W}_{t-1}^{(i)}$  (for example decision stump $h(x, \theta) = \sgn(\theta_1 x_k + \theta_0))$ \\
+Compute weighted classification error $\hat{\epsilon}_t = \sum_{i=1}^n \widetilde{W}_{t-1}^{(i)} 1\{y^{(i)} \neq h(x^{(i)}, \hat{\theta}_t )\}$ and score $\hat{\alpha}_t = \frac{1}{2}\ln {\frac{1 - \hat{\epsilon}_t}{\hat{\epsilon}_t}}$ \\
+Update weights on training examples $\widetilde{W}_t^{(i)} = c_t\widetilde{W}_{t-1}^{(i)} \exp(-y^{(i)} \hat{\alpha}_t h(x^{(i)}; \hat{\theta}_t))$ \\
+Return $h_m(x) = \sgn\big(\sum\limits_{i=1}^m \hat{\alpha}_t h(x; \hat{\theta_t})\big)$, where incorrect classifiers will get negative weights \\
+Boosting increases margin aggressively since it concentrates on the hardest examples
+
+\section{Principal Component Analysis}
+Assume data approximately lies on a lower dimensional subspace $\mathcal{Z}$ of $\mathcal{X}$. Then PCA finds a basis for $\mathcal{Z}$ consisting of the top $k < d$ directions of maximal variance (principal components) in $\mathcal{X}$ \\
+The variance along unit $u$ is $\frac{1}{n}\sum_{i=1}^n(x^{(i)})^T u)^2 = \frac{1}{n}\sum_{i=1}^n u^T x^{(i)}(x^{(i)})^Tu = u^T \Sigma u$ (assuming 0 mean) \\
+Maximizing the variance, $\mathcal{L}(u, \lambda) = u^T \Sigma u + \lambda(1 - u^Tu) \implies \Sigma u = \lambda u \implies u^T \Sigma u = \lambda$  \\
+Hence directions of maximal variance are eigenvectors of $\Sigma$ with variance as the eigenvalue \\
+Since $\Sigma \succeq 0$, svd gives its top $k$ eigenvectors $\{v_1, \ldots, v_k\}$ which form an orthonormal basis for $\mathcal{Z}$ \\
+We can thus approximate $z^{(i)} = (v_1^T x^{(i)}, \ldots, v_k^T x^{(i)})^T$ and reconstruct $\hat{x}^{(i)} = \sum_{j=1}^k z^{(i)}_j v_j$ \\
+PCA viewed as the orthogonal transformation $T = \begin{bmatrix}v_1 & v_2 \ldots v_k\end{bmatrix}^T$ such that $T(x^{(i)}) = z^{(i)}$ \\
+$J_k = \frac{1}{n} \sum\limits_{i=1}^n \norm{x^{(i)} - \hat{x}^{(i)}}^2 =  \frac{1}{n}\sum\limits_{i=1}^n (x^{(i)})^Tx^{(i)} - \sum\limits_{j=1}^k \lambda_j = \sum\limits_{j=k+1}^d \lambda_j$ is the mean squared projection error \\
+Typically choose $k$ such that 99$\%$ of the variance is retained, equivalently $\frac{nJ_k}{\sum_{i=1}^n\norm{x^{(i)}}^2} \leq 0.01$ \\
+Must normalize data to have 0 mean and unit variance so all features are on the same scale
+
 
 \newpage
 \section{Linear Regression}
@@ -113,6 +140,7 @@ Assuming the prior $\theta_i \sim \mbox{Lap}(0, \frac{1}{\lambda})$ is equivalen
 $\argmax\limits_\theta \log p(\theta | D) = \argmax\limits_\theta \log p(D| \theta) + \log \prod\limits_{i=1}^d \frac{1}{2 (\sfrac{1}{\lambda})}\exp (-\frac{\abs{ \theta_i}}{\sfrac{1}{\lambda}}) =  \argmax\limits_\theta \log p(D| \theta) -\lambda \norm{\theta_{1:d}}_1$ \\
 $\ell_1$ regularization results in sparser solutions as it's more likely for the loss function to touch the axis aligned spikes first, but is not differentiable. Laplace prior also places more mass near $\theta_i = 0$ 
 
+
 \newpage
 \section{Perceptron}
 Assume data is linearly separable by a hyperplane with normal vector $\theta$, then $h_\theta(x) = \sgn(\theta^Tx)$ \\
@@ -139,7 +167,7 @@ In practice, prefer low $C$ so training is faster. Train time $O(n^2d)$ rbf and 
 Since prediction and optimization only depend on inner products, lets map $x^{(i)} \to \phi(x^{(i)})$ \\
 Computing $\phi(x^{(i)})$ is inefficient, thus find implicit mapping (kernel) where $k(x^{(i)}, x^{(j)}) = \inner{\phi(x^{(i)})}{\phi(x^{(j)})}$ \\
 Kernels redefine inner product as if we had found the corresponding mapping to a higher dimension \\
-$k(x,z) = (1 + \inner{x}{z})^2 \implies \phi(x) = (1, x_1^2, x_2^2, \sqrt{2}x_1x_2, \sqrt{2}x_1, \sqrt{2}x_2)^T$ "maps" $x$ to quadratic space \\
+$k(x,z) = (1 + \inner{x}{z})^2 \implies \phi(x) = (1, x_1^2, x_2^2, \sqrt{2}x_1x_2, \sqrt{2}x_1, \sqrt{2}x_2)^T$ ``maps" $x$ to quadratic space \\
 If $k_1(x, z)$, $k_2(x, z)$ are valid kernels, then $k(x, z) = f(x)k_1(x, z)k_2(x, z) + k_2(x, z)$ is a valid kernel \\
 $k(x, z) = \exp(-\gamma \norm{x-z}^2)$, $\gamma > 0$ places a Gaussian around every support vector, hence $\gamma \propto \frac{1}{\lambda}$ \\
 $\exp(-\frac{1}{2}\norm{x-z}^2) = \exp(-\frac{1}{2}x^Tx)\exp(x^Tz)\exp(-\frac{1}{2}z^Tz)$, $\exp(x^Tz) = 1 + \frac{x^Tz}{1!} + \frac{(x^Tz)^2}{2!} + \ldots$ \\
@@ -150,45 +178,11 @@ $k$ is a valid kernel $\iff$ $K \succeq 0$ for any $\{x^{(i)}\}_{i=1}^n$, where 
 $K \succeq 0 \implies K_{ij} = e_i^TPDP^Te_j = (e_i^TPD^{\frac{1}{2}})(D^{\frac{1}{2}}P^Te_j) = (D^\frac{1}{2}P^Te_i)^T(D^\frac{1}{2}P^Te_j) = \inner{\phi(x^{(i)}}{\phi(x^{(j)})}$ \\
 $K_{ij} = \inner{\phi(x^{(i)}}{\phi(x^{(j)})} \implies x^TKx = \sum_{ij} x_ix_j K_{ij} = \inner{\sum_i x_i \phi(x^{(i)})}{\sum_j x_j \phi(x^{(j)})} \geq 0 $
 
-\section{Generative Learning Algorithms}
-Discriminative algorithms (d-trees, softmax, svms, kNN, k-means, etc..) try to learn $p(y|x)$ \\
-Generative algorithms model $p(y)$ and $p(x|y)$ and then make predictions by maximizing the posterior probability $\argmax\limits_y p(y|x) = \argmax\limits_y \frac{p(x|y)p(y)}{p(x)} = \argmax\limits_y p(x|y)p(y)$ 
-
-\subsection{Gaussian Discriminant Analysis}
-Assume $y \sim \mbox{Bernoulli}(\phi)$, $x|y=0 \sim \mathcal{N}(\mu_0, \Sigma)$, $x|y=1 \sim \mathcal{N}(\mu_1, \Sigma)$, which gives us \\
-$\ell(\phi, \mu_0, \mu_1, \Sigma) = \log \prod\limits_{i=1}^np(x^{(i)}, y^{(i)}; \phi, \mu_0, \mu_1, \Sigma) = \log \prod\limits_{i=1}^np(x^{(i)} | y^{(i)}; \mu_0, \mu_1, \Sigma)p(y^{(i)}; \phi)$, solving \\
-$\phi = \frac{1}{n}\sum\limits_{i=1}^n 1\{y^{(i)} = 1\}$, $\mu_j = \frac{\sum_{i=1}^n 1\{y^{(i)} = j\} x^{(i)}} {\sum_{i=1}^n 1\{y^{(i)} = j\}}$, $\Sigma = \frac{1}{n}\sum\limits_{i=1}^n (x^{(i)} - \mu_{y^{(i)}})(x^{(i)} - \mu_{y^{(i)}})^T$ \\
-By viewing $p(y=1|x) = f_1(x)$, we can write $p(y=1|x) = \frac{1}{1+\exp(-\theta^Tx)}$ where $\theta = f_2(\phi, \Sigma, \mu_0, \mu_1)$ \\
-If $p(x|y)$ is Gaussian, then $p(y|x)$ is logistic. However, the assumption  $x|y = j \sim \mbox{Poisson}(\lambda_j)$ still leads to a logistic posterior. Hence GDA makes a stronger assumption that data is Gaussian \\
-Note that while there are two mean vectors $(\mu_0, \mu_1)$, GDA typically shares the covariance matrix $\Sigma$
-
-\subsection{Naive Bayes}
-Assume $y \sim \mbox{Multinoulli}(\boldsymbol \phi)$ and $p(x|y) = \prod\limits_{i=1}^d p(x_i | y)$, then our prediction rule is simply \\
-$\argmax\limits_y p(y | x) = \argmax\limits_y p(x|y)p(y) = \argmax\limits_y \prod\limits_{i=1}^d p(x_i | y) p(y)$ \\
-If $x_i$ is categorial or continuous, then we can split it into $k_i$ Bernoullis by discretizing
-
-\section{Optimization}
-Batch gradient descent does one step using $n$ examples: $ \theta \leftarrow \theta - \alpha \nabla_\theta J(\theta)$ \\
-Stochastic gradient descent does one step \textit{per} example: $\theta \leftarrow \theta - \alpha \nabla_\theta J_i(\theta)$ \\
-Learning rate $\alpha_k = \frac{1}{1+k}$ where $k = \mbox{outer loop iteration}$ is typically a good choice
-
-\subsection{Newton's Method}
-Iteratively find better approximations for roots of differentiable function by $x_{n+1} = x_n - \frac{f(x_n)}{f^\prime(x_n)}$ \\
-In optimization, find critical points of twice differentiable function by $\boldsymbol{x}_{n+1} = \boldsymbol{x}_n - \gamma \boldsymbol{H}f(\boldsymbol{x}_n)^{-1} \nabla f(\boldsymbol{x}_n) $ \\
-Often converges in fewer steps than gradient descent, but computing $\boldsymbol{H}_f^{-1}$ is costly 
-
-\subsection{Expectation Maximization}
-
-Given a statistical model that generates observed $\{x^{(i)}\}_{i=1}^n$ and latent $\{z^{(i)}\}_{i=1}^n$ with parameters $\theta$, the marginal likelihood $p(X | \theta) = \sum\limits_{i=1}^n\log\sum\limits_{\mbox{ }z^{(i)}} p(x^{(i)}| z^{(i)})p(z^{(i)})$ is often intractable to solve directly \\
-Begin with initial guess for model parameters. Then repeating until convergence \\
-Set $r_{ij} = p(z^{(i)} = j | x^{(i)}; \theta)$ [E-step] (given $\theta$ guess distribution of $z^{(i)}$) \\
-Solve $\theta^* = \argmax\limits_\theta \log p(X|\theta) =  \sum_{i}\sum_{j} \log p(x^{(i)} | z^{(i)} = j; \theta)r_{ij} $ [M-step] (MLE for $\theta$ given $z^{(i)}$) \\
-EM repeatedly sets $\theta^* = \argmax\limits_\theta E[\ell(\theta) | Y]$ where $Y = Z|X; \theta$, guaranteed to find local optima \\
-The [E-step] constructs $\ell(\theta_{t+1})$ that lower bounds $\ell(\theta)$ and the [M-step] maximizes $\ell(\theta_{t+1})$
 
 \newpage
 \section{Clustering}
-Organize data into clusters such that there is high intra-cluster and low inter-cluster similarity 
+Organize data into clusters such that there is high intra-cluster and low inter-cluster similarity \\
+The $\ell_p$ norm $\norm{x}_p = \big(\sum\limits_{i=1}^n \abs{x_i}^p \big)^{\sfrac{1}{p}}$ implicitly defines an inner product, where $\norm{x}_2 =  \sqrt{x^Tx}$ 
 
 \subsection{k-Means}
 Initialize $k$ cluster centroids randomly ${\mu_1}, \ldots, {\mu_k} \in \R^d$, then repeating until convergence \\
@@ -210,7 +204,7 @@ If $\mbox{dist}(A, B) = 2$, then create parent node $AB$ with two branches of di
 \subsection{Gaussian Mixture Models}
 Assume $z^{(i)} \sim \mbox{Categorial}(\phi)$, $\phi_j = p(z^{(i)} = j)$, $\sum_{j=1}^k \phi_j = 1$, $x^{(i)} | z^{(i)} = j \sim \mathcal{N}(\mu_j, \Sigma_j)$, then \\
 $\ell(\phi, \boldsymbol \mu, \boldsymbol \Sigma) = \sum\limits_{i=1}^n \log p(x^{(i)}; \phi, \boldsymbol \mu, \boldsymbol \Sigma) = \sum\limits_{i=1}^n \log \sum\limits_{z^{(i)}=1}^k p(x^{(i)}| z^{(i)}; \phi, \boldsymbol \mu, \boldsymbol \Sigma)p(z^{(i)})$, using EM \\
-$r_{ij} = w^{(i)}_j = p(z^{(i)}=j; \phi, \boldsymbol \mu, \boldsymbol \Sigma) = \frac{p(x^{(i)}|z^{(i)}=j; \boldsymbol \mu, \boldsymbol \Sigma)p(z^{(i)}=j ; \phi)}{\sum_{l=1}^k p(x^{(i)}|z^{(i)}=l; \boldsymbol \mu, \boldsymbol \Sigma)p(z^{(i)}=l ; \phi)}$ [E-step] \\
+$w^{(i)}_j = p(z^{(i)}=j; \phi, \boldsymbol \mu, \boldsymbol \Sigma) = \frac{p(x^{(i)}|z^{(i)}=j; \boldsymbol \mu, \boldsymbol \Sigma)p(z^{(i)}=j ; \phi)}{\sum_{l=1}^k p(x^{(i)}|z^{(i)}=l; \boldsymbol \mu, \boldsymbol \Sigma)p(z^{(i)}=l ; \phi)}$ [E-step] \\
 ${\mu_j} = \frac{\sum_{i=1}^n w^{(i)}_jx^{(i)}}{\sum_{i=1}^n w^{(i)}_j}$, ${\Sigma_{j}} = \frac{\sum_{i=1}^nw^{(i)}_j (x^{(i)} - {\mu_j})^T(x^{(i)} - {\mu_j})}{\sum_{i=1}^nw^{(i)}_j}$, $\phi_j = \frac{1}{n}\sum\limits_{i=1}^n w^{(i)}_j$ [M-step] \\
 $\mbox{[E-step]}$ viewed as soft clustering examples and [M-step] viewed as weighted update of cluster centers \\
 Choose number of clusters $k$ by minimizing Bayesian Information Criteria: $\ln(n)k - 2\ln(\hat L)$ 
@@ -223,6 +217,50 @@ Compute $\mbox{sim}(L(X), L(X^\prime))$ where $X^\prime$ is a subsample and comp
 Cluster Cohesion: $\sum_{i=1}^n \norm{\boldsymbol{x^{(i)}} - \boldsymbol \mu_{c^{(i)}}}^2$, Cluster Separation: $\sum_{j=1}^k \abs{C_i} \norm{\boldsymbol \mu - \boldsymbol{\mu_j}}^2$\\
 Silhouette Coefficient: for individual $x^{(i)}$, let $a = $ average distance of $x^{(i)}$ to points in its cluster and $b = \min($average distance of $x^{(i)}$ to points in another cluster$)$, want $s = 1- \sfrac{a}{b}$ close to 1 
 
+
+\newpage
+\section{Optimization}
+Batch gradient descent does one step using $n$ examples: $ \theta \leftarrow \theta - \alpha \nabla_\theta J(\theta)$ \\
+Stochastic gradient descent does one step \textit{per} example: $\theta \leftarrow \theta - \alpha \nabla_\theta J_i(\theta)$ \\
+Learning rate $\alpha_k = \frac{1}{1+k}$ where $k = \mbox{outer loop iteration}$ is typically a good choice
+
+\subsection{Newton's Method}
+Iteratively find better approximations for roots of differentiable function by $x_{n+1} = x_n - \frac{f(x_n)}{f^\prime(x_n)}$ \\
+In optimization, find critical points of twice differentiable function by $\boldsymbol{x}_{n+1} = \boldsymbol{x}_n - \gamma \boldsymbol{H}f(\boldsymbol{x}_n)^{-1} \nabla f(\boldsymbol{x}_n) $ \\
+Often converges in fewer steps than gradient descent, but computing $\boldsymbol{H}_f^{-1}$ is costly 
+
+\subsection{Expectation Maximization}
+Given a set of observable $X$ and latent $Z$, directly solving $\ell(\theta) = \sum_z \log p(x, z ; \theta)$ is often intractable \\
+${\mbox{Rewite }\ell(\theta) = \sum_z \log p(x, z ; \theta) = \sum_z \log q(z|x; \theta) \frac{p(x, z ; \theta)}{p(z | x;\theta)} \geq \sum_z q(z | x; \theta) \log  \frac{p(x, z ; \theta)}{q(z | x;\theta)} \equiv J(q, \theta)}$ \\
+Applied Jensen's inequality since $\log$ is concave. Furthermore, let $q(z| x; \theta) = p(z|x;\theta)$ \\
+Instead of maximizing $\ell(\theta)$ directly, EM maximizes the lower bound $J(q, \theta)$ via coordinate ascent \\
+Since $\ell(\theta) \geq J(q, \theta) = \sum_z p(z|x; \theta) \log \frac{p(x, z ; \theta)}{p(z | x;\theta)} = \sum_z p(z|x; \theta) \log p(x, z ; \theta) + H(p(z|x;\theta))$ \\
+Maximizing $J(q, \theta)$ is equivalent to maximizing the expected complete log-likelihood, thus \\
+$\mbox{[E-step]}$: Compute $Q(\theta | \theta^{(t)}) = E_{p(z|x;\theta^{(t)})}[\log p(x, z ;\theta)] =  \sum_z p(z|x; \theta) \log p(x, z ; \theta) $ \\
+$\mbox{[M-step]}$: Set $\theta^{(t+1)} = \argmax\limits_\theta Q(\theta | \theta^{(t)})$ is guaranteed to find local optima 
+
+\section{Evaluating Performance}
+$k$-fold cross validation: partition training set into $k$ folds, choose each fold in turn as validation set and train model on remaining $k-1$ folds. Leave-one-out cv special case when $k=n$ \\
+In practice, can do multiple trials of cv and bootstrap test set to compute statistics using $t$-test \\
+Precision $= \frac{\text{TP}}{\text{TP + FP}} = \mathbb{P}(y^{(i)} = 1 | h(x^{(i)}) = 1)$, recall $=\frac{\text{TP}}{\text{TP + FN}} = \mathbb{P}(h(x^{(i)}) = 1 | y^{(i)} = 1)$ \\
+TPR $ = \mathbb{P}(h(x^{(i)}) = 1 | y^{(i)} = 1)$, FPR $ = \mathbb{P}(h(x^{(i)}) = 0 | y^{(i)} = 1)$, TNR = $\mathbb{P}(h(x^{(i)}) = 0 | y^{(i)} = 0)$ \\
+AUROC: area under ROC curve (plot of TPR vs FPR). $F_\beta = \frac{(1+\beta^2) \cdot \text{precision} \cdot \text{recall} }{\beta^2 \cdot \text{precision } + \text{ recall}}$ \\
+Given classifier that outputs confidence, generate ROC or PR curve by varying threshold 
+
+\subsection{Algorithm Analysis}
+Learning Curves: plot $J_{\text{train}}$ and $J_{\text{test}}$ for different training set sizes to determine high bias/variance \\
+Error analysis: plug-in ground truth for each component and see how error changes \\
+Ablative analysis: remove components from system to see how it breaks 
+
+\subsection{Imbalanced and Multiclass}
+Subsampling: random pick $k$ majority class examples and include all $k$ minority class examples \\
+Oversampling: include all $m$ majority class examples and sample minority class with replacement \\
+Give minority class examples larger weight (classifier must be able to handle sample weights) \\
+One-vs-all: train $m$ classifiers and pick most confident positive or $\hat y = \argmin_y \sum_{j=1}^k \mbox{Loss}(R(y, j)h_j(x))$ \\
+One-vs-one: train $m \choose 2$ binary classifiers and pick class with largest number of positive votes 
+
+
+\newpage
 \section{Hidden Markov Models}
 Stochastic process: a collection or r.vs that evolve over time \\
 Markov property: conditional distribution of future states depends only on the current state \\

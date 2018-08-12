@@ -45,8 +45,8 @@ The conditional likelihood of $y|x$ is $L(\theta) = \prod\limits_{i=1}^np(y^{(i)
 Given prior $p(\theta)$, find $\theta$ that maximizes the posterior, $\theta^* = \argmax\limits_\theta p(\theta|D) = \argmax\limits_\theta p(D| \theta)p(\theta)$ \\
 When $n \to \infty$ or $p(\theta)$ is uniform, then MAP = MLE as $p(\theta | D) \propto p(D|\theta)$
 
-\section{Expectation and Covariance}
-$E[X] = \int_x x f(x)dx$, $\V(X) = E[(X-E[X])^2] = E[X^2] - E[X]^2$ \\
+\section{Expectation and Variance}
+$E[X] = \int_x x f(x)dx$, $\V(X) = E[(X-E[X])^2] = E[X^2] - E[X]^2$, $\sigma^2 = \frac{\sum (X - \mu)}{N}$ \\
 $E[g(X)] = \int_x g(x) f(x)dx$, $E[aX + b] = aE[X] + b$, $\V(aX + b) = a^2\V(X)$\\
 $E[\sum_i X_i] = \sum_i E[X_i]$, $\V(\sum_{i} X_i) = \sum_{i} \V(X_i) + 2\sum\limits_{i < j}\C(X_i, X_j)$ \\
 $\C(X, Y) = \inner{X}{Y} = E[(X-E[X])(Y-E[Y])] = E[XY] - E[X]E[Y]$ \\
@@ -54,23 +54,23 @@ Define correlation of $X$ and $Y$ as $\rho(X, Y) = \frac{\C(X, Y)}{\sqrt{\V(X)\V
 $\rho(X,Y) =  \pm 1 \iff Y = aX + b$ for some $a, b \in \mathbb{F}$ 
 
 \subsection{Covariance Matrix}
-$\Sigma = E[(\boldsymbol X - \boldsymbol \mu)(\boldsymbol X - \boldsymbol \mu)^T] = E[\boldsymbol X \boldsymbol X^T] - \boldsymbol \mu \boldsymbol \mu^T$, where $\Sigma_{ij} = \C(X_i, X_j)$ \\
-$\Sigma$ is symmetric positive semi-definite and $\C(Ax + b) = A \Sigma A^T$ \\
-Suppose $\boldsymbol x = (\boldsymbol x_1, \boldsymbol x_2)$ is jointly Gaussian with parameters $\boldsymbol \mu = \begin{pmatrix} \boldsymbol \mu_1\\ \boldsymbol \mu_2 \end{pmatrix}$ and $\boldsymbol \Sigma = \begin{pmatrix} \boldsymbol \Sigma_{11} & \boldsymbol \Sigma_{12} \\ \boldsymbol \Sigma_{21} & \boldsymbol \Sigma_{22} \end{pmatrix}$, then \\
-The marginals are $p(\boldsymbol x_1) = \mathcal{N}(\boldsymbol x_1 | \boldsymbol \mu_1, \boldsymbol \Sigma_{11})$ and $p(\boldsymbol x_2) = \mathcal{N}(\boldsymbol x_2 | \boldsymbol \mu_2, \boldsymbol \Sigma_{22})$ with posterior conditional \\
-$p(\boldsymbol x_1 | \boldsymbol x_2) = \mathcal{N}(\boldsymbol x_1 | \boldsymbol \mu_{1|2}, \boldsymbol \Sigma_{1|2})$, where $\boldsymbol \mu_{1|2} = \boldsymbol \mu_1 + \boldsymbol \Sigma_{12}\boldsymbol \Sigma_{22}^{-1}(\boldsymbol x_2 - \boldsymbol \mu_2)$, $\boldsymbol \Sigma_{1|2} = \boldsymbol \Sigma_{11} - \boldsymbol \Sigma_{12}\boldsymbol \Sigma_{22}^{-1}\boldsymbol \Sigma_{21}$
+$\Sigma = E[(x - \mu)(x - \mu)^T] = E[x x^T] - \mu \mu^T$, where $\Sigma_{ij} = \C(x_i, x_j)$ and $\C(Ax + b) = A \Sigma A^T$ \\
+Given data ${\{x^{(i)}\}}_{i=1}^n$ with 0 mean, the empirical $\Sigma = \frac{1}{n}\sum_{i=1}^n x^{(i)}(x^{(i)})^T = \frac{1}{n}X^TX$ \\
+$\Sigma_{ij} = \Sigma_{ji}$ for $i \neq j$ are the covariances and linearly correlate the $i$th and $j$th dimensions \\
+The diagonal entries of $ \Sigma$ are the variances along the original axes whereas the eigenvalues are the variances along the principal axes, hence $\Sigma \succeq 0$ as we can always rotate to the principal axes
 
 \subsection{Conditional Expectation}
-The conditional distribution of $X$ given $Y$ is $p_{X|Y}(x|y) = \frac{p_{X,Y}(x,y)}{p_Y(y)} = \frac{P[X=x \cap Y = y]}{P[Y=y]}$ \\
-The conditional expectation of $X$ given $Y$ is $E[X|Y=y] = \sum_x x p_{X|Y}(x|y) $ \\
-$E[E[X|Y]] = \sum_yE[X|Y=y]p_Y(y) = E[X]$
+The conditional distribution of $X$ given $Y$ is $p(x|y) = \frac{p(x,y)}{p(y)} = \frac{P[X=x \cap Y = y]}{P[Y=y]}$ \\
+The conditional expectation $E[X|Y] = E_{p(x|y)}[X] = \sum_x xp(x|y)$ is a function of $y$ \\
+$E[E[X|Y]] = \sum_y\sum_x xp(x|y)p(y) = E[X]$, $\sum_x p(x|y) = 1$, $\sum_yp(x|y) = p(x)$ \\
+Suppose $\boldsymbol x = (\boldsymbol x_1, \boldsymbol x_2)$ is jointly Gaussian with parameters $\boldsymbol \mu = \begin{pmatrix} \mu_1\\ \mu_2 \end{pmatrix}$ and $\boldsymbol \Sigma = \begin{pmatrix} \Sigma_{11} & \Sigma_{12} \\ \Sigma_{21} & \Sigma_{22} \end{pmatrix}$, then \\
+The marginals are $p(x_1) = \mathcal{N}(x_1 | \mu_1, \Sigma_{11})$ and $p(x_2) = \mathcal{N}(x_2 | \mu_2, \Sigma_{22})$ with posterior conditional \\
+$p(x_1 | x_2) = \mathcal{N}(x_1 | \mu_{1|2}, \Sigma_{1|2})$, where $\mu_{1|2} = \mu_1 + \Sigma_{12} \Sigma_{22}^{-1}(x_2 - \mu_2)$ and $ \Sigma_{1|2} = \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{21}$
 
 \section{Inequalities and Limit Theorems}
 If $X$ only takes on non-negative values, then for any $a > 0$, $P[X \geq a] \leq \frac{E[X]}{a}$  (Markov)\\
 If $E[X] = \mu$ and $\V(X) = \sigma^2$, then for any $k > 0$, $P[|X - \mu| \geq k \sigma] \leq \frac{1}{k^2}$ (Chebyshev) \\
-If $f$ is a convex function, then $E[fX] \geq f(E X)$ (Jensen) 
-
-\subsection{Limit Theorems}
+If $f$ is a convex function, then $E[fX] \geq f(E X)$ (Jensen) \\
 Let $X_1, X_2, ..., X_n$ be iid with $E[X] = \mu$ and $\V(X) = \sigma^2 < \infty$, then for $n$ sufficiently large 
 \begin{enumerate}
 \item $\frac{\bar{X} - \mu}{\sfrac{\sigma}{\sqrt{n}}} \approx Z \sim \mathcal{N}(0, 1)$, where $\bar{X} = \frac{X_1 + X_2 + ... + X_n}{n}$ has mean $\mu$ and variance $\frac{\sigma^2}{n}$ (CLT)
@@ -87,12 +87,12 @@ If $X_1, X_2, ..., X_n$ are independent r.vs, then $M_{X_1 + X_2 + ... + X_n}(t)
 
 \section{Random Variables}
 A random variable is a function $X: S \to \mathbb{R}$ where $S$ is the sample space.\\
-For discrete $X, Y$, the joint pmf is $p_{X,Y}(x,y) = P[X = x \cap Y = y]$, where $\sum_x \sum_y p_{X, Y}(x, y)=1$\\
+For discrete $X, Y$, the joint pmf is $p(x,y) = P[X = x \cap Y = y]$, where $\sum_x \sum_y p(x, y)=1$\\
 For continuous $X, Y$, the joint pdf is $\int \int_{(x,y) \in R} f(x, y)dx dy = P[(x, y) \in R]$ \\
 Note that although $\int_a^b f(x)dx = P[a \leq X \leq b]$ for continuous $X$, $P[X=a] = 0$ \\
 If $F(a) = P[X\leq a] = \int_{-\infty}^a f(x)dx$ is the cdf, then $f(x) = \frac{d}{dx}F(x)$ \\
-Continuous (discrete) r.vs are independent if and only if $f_{X,Y}(x,y) = f_X(x) f_Y(y) $ \\
-The marginal density of $X$ is $f_X(x) = \int_y f(x,y)dy$ 
+Continuous (discrete) r.vs are independent if and only if $f(x,y) = f(x) f(y) $ \\
+The marginal density of $X$ is $f(x) = \int_y f(x,y)dy$ 
 
 \subsection{Functions of Random Variables}
 Suppose $X$ is a random variable and $Y=g(X)$. If $g$ is increasing and differentiable, then \\
@@ -146,10 +146,8 @@ $P(a\leq X \leq b) = P(Z \leq \frac{b-\mu}{\sigma}) - P(Z \leq \frac{a-\mu}{\sig
 Approximates binomial well (with continuity correction) when $np$ and $n(1-p) > 5$ 
 
 \subsection{Multivariate Gaussian}
-$X\sim \mathcal{N}(\boldsymbol \mu, \boldsymbol \Sigma)$, where $f(\boldsymbol{x}) = \frac{1}{(2\pi)^{\sfrac{d}{2}} \abs{\boldsymbol \Sigma}^{\sfrac{1}{2}}}\exp{(-\frac{1}{2}(\boldsymbol x-\boldsymbol \mu)^T \boldsymbol \Sigma^{-1} (\boldsymbol x-\boldsymbol \mu))}$ \\
-The diagonal entries of $\boldsymbol \Sigma$ are the variances and stretch the density in the $i$th direction(-ish) \\
-$\boldsymbol \Sigma_{ij} = \boldsymbol \Sigma_{ji}$ for $i \neq j$ are the covariances and linearly correlate the $i$th and $j$th directions \\
-If the joint $f(\boldsymbol x)$ is radially symmetric, then $\boldsymbol \Sigma_{ij} = 0$ for $i \neq j$ and $\boldsymbol \Sigma_{ii} = \boldsymbol \Sigma_{jj}$ for $i = j$
+$X\sim \mathcal{N}(\mu, \Sigma)$, where $f({x}) = \frac{1}{(2\pi)^{\sfrac{d}{2}} \abs{\Sigma}^{\sfrac{1}{2}}}\exp{(-\frac{1}{2}(x-\mu)^T  \Sigma^{-1} ( x- \mu))}$ \\
+If the joint $f( x)$ is radially symmetric, then $\Sigma_{ij} = 0$ for $i \neq j$ and $\Sigma_{ii} = \Sigma_{jj}$ for $i = j$
 
 \subsection{Laplace Distribution}
 $X \sim \mbox{Laplace}(\mu, b)$, $f(x) = \frac{1}{2b} \exp (-\frac{\abs{x - \mu}}{b})$, $M_X(t) = \frac{\exp(\mu t)}{1 - b^2t^2}$, $E[X] = \mu$, $\V(X) = 2b^2$ \\
